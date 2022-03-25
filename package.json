@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "rm -rf ./lib && tsc",
+    "ci": "yarn run build && yarn test --coverage"
   },
   "repository": {
     "type": "git",

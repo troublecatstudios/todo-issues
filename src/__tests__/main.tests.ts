@@ -15,6 +15,4 @@ describe('the main entrypoint', () => {
       expect(e).toBe(NoMarkersSpecifiedError);
     }
   });
-
-  it('')
 });

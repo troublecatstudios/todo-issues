@@ -1,6 +1,7 @@
 import { readFile } from 'fs/promises';
 import {getCommentsByMarker, getTitleAndReference} from './../todo-parser';
 import { fixture } from './fixture-helper';
+import { normalizeString } from './test-helpers';
 
 describe('getCommentsByMarker', () => {
   it('exists', async () => {
@@ -51,6 +52,25 @@ describe('getCommentsByMarker', () => {
 
       expect(result).toHaveLength(1);
       expect(first?.title).toBe('convert this to typescript');
+    });
+
+    describe('each todo', () => {
+      it('should contain the surrounding code', async () => {
+        let file = fixture('./todo-single-comment.js');
+        let result = await getCommentsByMarker('TODO', file);
+
+        let first = result.at(0);
+
+        let expectedCode = [
+          '',
+          '// TODO: convert this to typescript',
+          'function add() {',
+          '  var i = 0;',
+          '  for(var x of arguments) {'
+        ].join('\r\n');
+
+        expect(normalizeString(first?.surroundingCode!)).toBe(normalizeString(expectedCode));
+      });
     });
   });
 });

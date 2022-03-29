@@ -1,0 +1,16 @@
+on: push
+name: CI
+jobs:
+  ci:
+    name: yarn install
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup Nodejs
+      uses: actions/setup-node@v1
+      with:
+        node-version: 16
+    - name: Install dependencies
+      run: yarn
+    - name: Run tests
+      run: yarn test

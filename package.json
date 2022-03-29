@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --no-cache",
     "build": "rm -rf ./lib && tsc",
     "ci": "yarn run build && yarn test --coverage"
   },

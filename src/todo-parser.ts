@@ -10,6 +10,7 @@ export interface ITodo {
   type: CommentMarker;
   endLine: number;
   surroundingCode: string;
+  filePath: string;
 };
 
 const markerCheck:RegExp = /^\W+\s\w+(?: \[([^\]\s]+)\])?:(.*)$/img
@@ -42,6 +43,7 @@ const createTodo = async (token: TokenWithLineData<Prism.Token>, marker: Comment
     line: token.line,
     endLine: token.endLine,
     type: marker,
+    filePath,
     reference: match?.at(1) || '',
     title: (match?.at(2) || '').trim(),
     surroundingCode: contents.slice(Math.max(0, token.line - 3), Math.min(contents.length, token.endLine + 3)).join('\n')

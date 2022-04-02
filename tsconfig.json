@@ -12,7 +12,8 @@
   },
   "exclude": [
     "node_modules",
-    "**/*.test.ts",
-    "**/__mocks__/**/*.ts"
+    "src/__tests__/**/*.ts",
+    "src/__mocks__/**/*.ts",
+    "src/__fixtures__/**/*.ts"
   ]
 }

@@ -36,7 +36,7 @@ jobs:
           level: ${{ steps.release-label.outputs.level }}
 
       - name: Prep
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3.1.0
         with:
           node-version: '16'
 

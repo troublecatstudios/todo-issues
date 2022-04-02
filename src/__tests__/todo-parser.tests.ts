@@ -1,5 +1,6 @@
+import { createHash } from 'crypto';
 import { readFile } from 'fs/promises';
-import {getCommentsByMarker, getTitleAndReference} from './../todo-parser';
+import {getCommentsByMarker, getHash, getTitleAndReference, InvalidHashInputFilePathError, InvalidHashInputTitleError} from './../todo-parser';
 import { fixture } from './fixture-helper';
 import { normalizeString } from './test-helpers';
 
@@ -72,6 +73,43 @@ describe('getCommentsByMarker', () => {
         expect(normalizeString(first?.surroundingCode!)).toBe(normalizeString(expectedCode));
       });
     });
+  });
+});
+
+describe('getHash', () => {
+  it('should exist', async () => {
+    expect(getHash).toBeDefined();
+  });
+
+  it('should expect a title', async () => {
+    try {
+      getHash({ title: '', filePath: ''});
+      fail();
+    } catch (e) {
+      expect(e).toBe(InvalidHashInputTitleError);
+    }
+  });
+
+  it('should expect a filePath', async () => {
+    try {
+      getHash({ title: 'some title', filePath: ''});
+      fail();
+    } catch (e) {
+      expect(e).toBe(InvalidHashInputFilePathError);
+    }
+  });
+
+  it('should return a string value', async () => {
+    let hash = getHash({ title: 'some title', filePath: '/some/file/path'});
+    expect(hash).toBeDefined();
+    expect(typeof(hash)).toBe('string');
+  });
+
+  it('should return a md5 hash of the title and filepath values', async () => {
+    let expectedHash = createHash('md5').update('some title+/some/file/path').digest('hex');
+    let hash = getHash({ title: 'some title', filePath: '/some/file/path'});
+
+    expect(hash).toBe(expectedHash);
   });
 });
 

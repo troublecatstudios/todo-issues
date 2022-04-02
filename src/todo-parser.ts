@@ -1,3 +1,4 @@
+import { createHash } from "crypto";
 import { readFile } from "fs/promises";
 import Prism from "prismjs";
 import { getTokens, TokenWithLineData } from "./grammar";
@@ -19,6 +20,27 @@ export const getTitleAndReference = (contents: string): RegExpExecArray | null =
   // reset internal counter so regex matches correctly
   markerCheck.lastIndex = 0;
   return markerCheck.exec(contents);
+};
+
+export interface IHashInput {
+  title: string;
+  filePath: string;
+}
+
+export const InvalidHashInputTitleError = 'Invalid hash input. Title must be specified.';
+export const InvalidHashInputFilePathError = 'Invalid hash input. FilePath must be specified.';
+
+export const getHash = ({ title, filePath, ...other}: IHashInput): string => {
+  if (!title || !title.trim()) {
+    throw InvalidHashInputTitleError;
+  }
+
+  if (!filePath || !filePath.trim()) {
+    throw InvalidHashInputFilePathError;
+  }
+
+  let hash = createHash('md5').update(`${title}+${filePath}`).digest('hex');
+  return hash;
 };
 
 export const getCommentsByMarker = async(marker: CommentMarker, filePath: string): Promise<ITodo[]> => {

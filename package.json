@@ -6,6 +6,7 @@
   "scripts": {
     "test": "jest --no-cache",
     "build": "rm -rf ./lib && tsc",
+    "version": "yarn run build",
     "ci": "yarn run build && yarn test --coverage"
   },
   "repository": {

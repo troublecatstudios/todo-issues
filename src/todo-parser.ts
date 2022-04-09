@@ -7,6 +7,7 @@ export type CommentMarker = 'TODO' | 'FIXME' | 'HACK' | 'OPTIMIZE' | 'BUG';
 export interface ITodo {
   line: number;
   hash: string;
+  issue: string;
   title: string;
   type: CommentMarker;
   endLine: number;
@@ -74,13 +75,15 @@ const createTodo = async (token: TokenWithLineData<Prism.Token>, marker: Comment
   const match = getTitleAndReference(token.token.content.toString());
   const contents = (await readFile(filePath)).toString().split('\n');
   let title = (match?.at(2) || '').trim();
-  let hash = match?.at(1) || getHash({ title, filePath });
+  let hash = getHash({ title, filePath });
+  let issueNumber = (match?.at(1) || '').trim();
   return {
     line: token.line,
     endLine: token.endLine,
     type: marker,
     filePath,
     hash,
+    issue: issueNumber,
     title,
     surroundingCode: contents.slice(Math.max(0, token.line - 3), Math.min(contents.length, token.endLine + 3)).join('\n')
   };

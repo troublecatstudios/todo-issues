@@ -1,0 +1,10 @@
+<%= it.body %>
+
+<% if (it.surroundingCode) { %>
+```<%~ it.languageCode %>
+<%~ it.surroundingCode %>
+```
+<% } %>
+
+---
+_This issue has been automatically created based on a TODO comment found in [<%= it.filePath %>:<%= it.line %>](<%= it.filePath %>#L<%= it.line %>). It will automatically be closed when the TODO comment is removed from the default branch._

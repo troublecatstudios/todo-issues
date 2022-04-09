@@ -9,7 +9,7 @@ describe('issues/text-formatter', () => {
   it('should accept a ITodo', async () => {
     var todo: ITodo = {
       line: 10,
-      reference: '',
+      hash: '',
       title: '',
       type: 'TODO',
       filePath: '',

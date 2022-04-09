@@ -73,7 +73,20 @@ describe('getCommentsByMarker', () => {
         expect(normalizeString(first?.surroundingCode!)).toBe(normalizeString(expectedCode));
       });
 
-      it('should contain a reference string that is created by getHash', async () => {
+      it('should contain the github issue within the comment, if applicable', async () => {
+        let file = fixture('./various-comment-examples.js');
+        let result = await getCommentsByMarker('TODO', file);
+
+        expect(result.length).toEqual(2);
+
+        let first = result.at(0)!;
+        let second = result.at(1)!;
+
+        expect(first.issue).toBe('');
+        expect(second.issue).toBe('#1453');
+      });
+
+      it('should contain a hash string that is created by getHash', async () => {
         let file = fixture('./todo-single-comment.js');
         let result = await getCommentsByMarker('TODO', file);
 
@@ -82,11 +95,11 @@ describe('getCommentsByMarker', () => {
         if (result.length > 0) {
           let first = result.at(0)!;
           expect(first).toBeDefined();
-          expect(first.reference).toBeDefined();
-          expect(first.reference).not.toBe('');
+          expect(first.hash).toBeDefined();
+          expect(first.hash).not.toBe('');
 
           let expectedHash = getHash(first);
-          expect(first.reference).toBe(expectedHash);
+          expect(first.hash).toBe(expectedHash);
         }
       });
     });

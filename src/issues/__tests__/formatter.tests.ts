@@ -1,4 +1,4 @@
-import { formatIssueText } from '../../issues/formatter';
+import { formatIssueText } from '../formatter';
 import { ITodo } from '../../todo-parser';
 
 describe('issues/text-formatter', () => {

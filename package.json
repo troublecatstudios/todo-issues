@@ -32,14 +32,14 @@
   "dependencies": {
     "@actions/core": "^1.8.0",
     "@actions/exec": "^1.1.1",
-    "@actions/glob": "^0.2.1",
+    "@actions/glob": "^0.3.0",
     "@actions/io": "^1.1.2",
     "@octokit/plugin-retry": "^3.0.9",
     "@octokit/plugin-throttling": "^3.6.2",
     "@octokit/rest": "^18.12.0",
     "eta": "^1.12.3",
     "js-yaml": "^4.1.0",
-    "linguist": "https://github.com/github/linguist#v7.19.0",
+    "linguist": "https://github.com/github/linguist#v7.20.0",
     "prismjs": "^1.27.0"
   }
 }

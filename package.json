@@ -40,6 +40,6 @@
     "eta": "^1.12.3",
     "js-yaml": "^4.1.0",
     "linguist": "https://github.com/github/linguist#v7.20.0",
-    "prismjs": "^1.27.0"
+    "prismjs": "^1.28.0"
   }
 }

@@ -1,4 +1,4 @@
-import {Octokit} from '@octokit/rest';
+import {Octokit, RestEndpointMethodTypes} from '@octokit/rest';
 import {Endpoints} from '@octokit/types';
 import {retry} from '@octokit/plugin-retry';
 import {throttling} from '@octokit/plugin-throttling';
@@ -11,6 +11,8 @@ type TaskInformation = {
 
 type IssuesListResponse =
   Endpoints['GET /repos/{owner}/{repo}/issues']['response']['data'];
+
+type GetIssueResponse = RestEndpointMethodTypes["issues"]["get"]["response"]["data"];
 
 const Octo = Octokit.plugin(retry, throttling);
 const octokit = new Octo({
@@ -38,6 +40,19 @@ const octokit = new Octo({
     doNotRetry: ['429'],
   },
 });
+
+export async function getIssue(issueNumber: number): Promise<GetIssueResponse | null> {
+  try {
+    const issue = await octokit.issues.get({
+      owner: RepositoryContext.repositoryOwner,
+      repo: RepositoryContext.repositoryName,
+      issue_number: issueNumber
+    });
+    return issue.data;
+  } catch (e) {
+    return null;
+  }
+}
 
 export async function getAllIssues(): Promise<IssuesListResponse> {
   const issues = await octokit.paginate(octokit.rest.issues.listForRepo, {
@@ -71,14 +86,19 @@ export async function completeIssue(taskReference: string): Promise<void> {
 }
 
 export async function updateIssue(
-  taskReference: string,
+  issueNumber: number,
   information: TaskInformation,
-): Promise<void> {
-  const result = await octokit.issues.update({
-    owner: RepositoryContext.repositoryOwner,
-    repo: RepositoryContext.repositoryName,
-    issue_number: +taskReference.substr(1),
-    title: information.title,
-    body: information.body,
-  });
+): Promise<boolean> {
+  try {
+    const result = await octokit.issues.update({
+      owner: RepositoryContext.repositoryOwner,
+      repo: RepositoryContext.repositoryName,
+      issue_number: issueNumber,
+      title: information.title,
+      body: information.body,
+    });
+    return true;
+  } catch (e) {
+    return false;
+  }
 }

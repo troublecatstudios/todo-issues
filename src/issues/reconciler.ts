@@ -1,15 +1,26 @@
 import * as github from './github';
 import { readTodos, writeTodos } from './../todo-dictionary';
 import { formatIssueText } from './formatter';
+
 export const reconcileIssues = async ():Promise<void> => {
   let dictionary = await readTodos();
-  console.log('a) reconciling issues', dictionary);
   for(var todo of dictionary.todos) {
-    console.log('b) reconciling issues', todo);
     let body = await formatIssueText(todo);
+    let shouldCreateIssue = true;
+
     if (todo.issue) {
       // check if issue is closed
-    } else {
+      let issue = await github.getIssue(parseInt(todo.issue));
+      if (issue && issue.state === "closed") {
+        continue;
+      }
+      if (issue) {
+        // update the issue in github
+        let result = await github.updateIssue(issue.number, { title: todo.title, body });
+        shouldCreateIssue = false;
+      }
+    }
+    if (shouldCreateIssue) {
       // try to create an issue
       try {
         let issue = await github.createIssue({ title: todo.title, body });

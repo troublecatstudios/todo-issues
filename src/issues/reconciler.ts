@@ -1,36 +1,56 @@
 import * as github from './github';
 import { readTodos, writeTodos } from './../todo-dictionary';
 import { formatIssueText } from './formatter';
+import { ITodo } from '../todo-parser';
 
-export const reconcileIssues = async ():Promise<void> => {
+export const reconcileIssues = async (processedTodos: ITodo[]):Promise<void> => {
   let dictionary = await readTodos();
-  for(var todo of dictionary.todos) {
-    let body = await formatIssueText(todo);
-    let shouldCreateIssue = true;
 
+  let actions = [];
+  for(var todo of dictionary.todos) {
     if (todo.issue) {
-      // check if issue is closed
       let issue = await github.getIssue(parseInt(todo.issue));
-      if (issue && issue.state === "closed") {
+      let codeMatch = processedTodos.filter(t => t.hash === todo.hash);
+      if (issue) {
+        if (issue.state === 'closed') {
+          continue;
+        }
+        if (codeMatch.length > 0) {
+          actions.push({ type: 'UPDATE', todo: codeMatch[0] });
+          continue;
+        }
+        actions.push({ type: 'CLOSE', todo: todo });
         continue;
       }
-      if (issue) {
-        // update the issue in github
-        let result = await github.updateIssue(issue.number, { title: todo.title, body });
-        shouldCreateIssue = false;
-      }
     }
-    if (shouldCreateIssue) {
-      // try to create an issue
-      try {
-        let issue = await github.createIssue({ title: todo.title, body });
-        if (issue) {
-          todo.issue = issue;
-        }
-      } catch (e) {
+    actions.push({ type: 'CREATE', todo: todo });
+  }
 
+  for(var todo of processedTodos) {
+    let dictionaryMatch = dictionary.todos.filter(t => t.hash === todo.hash);
+    if (dictionaryMatch.length > 0) {
+      continue;
+    }
+    actions.push({ type: 'CREATE', todo: todo });
+  }
+
+  let todos = [];
+  for(var { type, todo } of actions) {
+    let body = await formatIssueText(todo);
+    if (type === 'UPDATE') {
+      await github.updateIssue(parseInt(todo.issue), { title: todo.title, body });
+      todos.push(todo);
+    }
+    if (type === 'CREATE') {
+      let issue = await github.createIssue({ title: todo.title, body });
+      if (issue) {
+        todo.issue = issue;
       }
+      todos.push(todo);
+    }
+    if (type === 'CLOSE') {
+      await github.completeIssue(parseInt(todo.issue));
     }
   }
-  await writeTodos(dictionary.todos);
+  await writeTodos(todos);
 };

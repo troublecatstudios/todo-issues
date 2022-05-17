@@ -67,20 +67,24 @@ export async function getAllIssues(): Promise<IssuesListResponse> {
 export async function createIssue(
   information: TaskInformation,
 ): Promise<string | null> {
-  const result = await octokit.rest.issues.create({
-    owner: RepositoryContext.repositoryOwner,
-    repo: RepositoryContext.repositoryName,
-    title: information.title,
-    body: information.body,
-  });
-  return result.data.number ? `#${result.data.number}` : null;
+  try {
+    const result = await octokit.rest.issues.create({
+      owner: RepositoryContext.repositoryOwner,
+      repo: RepositoryContext.repositoryName,
+      title: information.title,
+      body: information.body,
+    });
+    return result.data.number ? `#${result.data.number}` : null;
+  } catch (e) {
+    return null;
+  }
 }
 
-export async function completeIssue(taskReference: string): Promise<void> {
+export async function completeIssue(issueNumber: number): Promise<void> {
   const result = await octokit.issues.update({
     owner: RepositoryContext.repositoryOwner,
     repo: RepositoryContext.repositoryName,
-    issue_number: +taskReference.substr(1),
+    issue_number: issueNumber,
     state: 'closed',
   });
 }

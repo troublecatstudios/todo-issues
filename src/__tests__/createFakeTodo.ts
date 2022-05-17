@@ -14,8 +14,8 @@ export const createFakeTodo = (type: CommentMarker, hash: string, title: string,
     hash,
     issue: '',
     filePath,
-    line: 10,
-    endLine: 10,
+    line: 2,
+    endLine: 2,
     surroundingCode: expectedCode
   }
 };

@@ -22,15 +22,15 @@
   "devDependencies": {
     "@types/jest": "^27.4.1",
     "@types/js-yaml": "^4.0.5",
-    "@types/node": "^17.0.23",
+    "@types/node": "^17.0.33",
     "@types/prismjs": "^1.26.0",
     "jest": "^27.5.1",
     "ts-jest": "^27.1.4",
     "ts-node": "^10.7.0",
-    "typescript": "^4.6.3"
+    "typescript": "^4.6.4"
   },
   "dependencies": {
-    "@actions/core": "^1.6.0",
+    "@actions/core": "^1.8.2",
     "@actions/exec": "^1.1.1",
     "@actions/glob": "^0.3.0",
     "@actions/io": "^1.1.2",
@@ -39,7 +39,7 @@
     "@octokit/rest": "^18.12.0",
     "eta": "^1.12.3",
     "js-yaml": "^4.1.0",
-    "linguist": "https://github.com/github/linguist#v7.19.0",
-    "prismjs": "^1.27.0"
+    "linguist": "https://github.com/github/linguist#v7.20.0",
+    "prismjs": "^1.28.0"
   }
 }

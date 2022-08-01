@@ -39,7 +39,7 @@
     "@octokit/rest": "^18.12.0",
     "eta": "^1.12.3",
     "js-yaml": "^4.1.0",
-    "linguist": "https://github.com/github/linguist#v7.20.0",
+    "linguist": "https://github.com/github/linguist#v7.22.1",
     "prismjs": "^1.28.0"
   }
 }

@@ -19,5 +19,7 @@ export const writeTodos = async (todos: ITodo[], filePath: string = defaultDicti
 
 export const readTodos = async (filePath: string = defaultDictionaryPath): Promise<Dictionary> => {
   let json = (await readFile(filePath)).toString();
-  return JSON.parse(json) as Dictionary;
+  let dict = JSON.parse(json) as Dictionary;
+  dict.todos ||= [];
+  return dict;
 };

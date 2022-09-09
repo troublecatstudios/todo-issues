@@ -3,7 +3,11 @@ import { readTodos, writeTodos } from './../todo-dictionary';
 import { formatIssueText } from './formatter';
 import { ITodo } from '../todo-parser';
 
-export const reconcileIssues = async (processedTodos: ITodo[]):Promise<void> => {
+export type ReconcilerOptions = {
+  dryRun: boolean
+};
+
+export const reconcileIssues = async (processedTodos: ITodo[], options?: ReconcilerOptions):Promise<void> => {
   let dictionary = await readTodos();
 
   let actions = [];
@@ -37,6 +41,19 @@ export const reconcileIssues = async (processedTodos: ITodo[]):Promise<void> => 
   let todos = [];
   for(var { type, todo } of actions) {
     let body = await formatIssueText(todo);
+
+    if (options?.dryRun) {
+      console.log(`--------------`);
+      console.log(`Action: ${type}`);
+      console.log(`Todo JSON: ${JSON.stringify(todo)}`);
+      if (type !== 'CLOSE') {
+        console.log(`Issue Body:`);
+        console.log(`${body}`);
+      }
+      console.log(`--------------`);
+      continue;
+    }
+
     if (type === 'UPDATE') {
       await github.updateIssue(parseInt(todo.issue), { title: todo.title, body });
       todos.push(todo);
@@ -52,5 +69,8 @@ export const reconcileIssues = async (processedTodos: ITodo[]):Promise<void> => 
       await github.completeIssue(parseInt(todo.issue));
     }
   }
-  await writeTodos(todos);
+
+  if (!options?.dryRun) {
+    await writeTodos(todos);
+  }
 };

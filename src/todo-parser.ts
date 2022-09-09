@@ -57,6 +57,8 @@ export const compareHash = (): boolean => {
 };
 
 export const getCommentsByMarker = async(marker: CommentMarker, filePath: string): Promise<ITodo[]> => {
+  if (!marker || marker.trim().length === 0) return [];
+
   let tokens = await getTokens(filePath);
   let comments = tokens.filter((e) => e.token instanceof Prism.Token &&
                                       e.token.type === 'comment' &&

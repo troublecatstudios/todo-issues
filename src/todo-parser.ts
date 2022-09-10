@@ -1,9 +1,25 @@
+import { match } from "assert";
 import { createHash } from "crypto";
 import { readFile } from "fs/promises";
 import Prism from "prismjs";
 import { getTokens, TokenWithLineData } from "./grammar";
 
-export type CommentMarker = 'TODO' | 'FIXME' | 'HACK' | 'OPTIMIZE' | 'BUG';
+export interface ICommentMarker {
+  matchText: string,
+  githubLabel: string,
+};
+
+export class CommentMarker implements ICommentMarker {
+  matchText: string;
+  githubLabel: string;
+
+  constructor(marker: string) {
+    let [matchText, githubLabel] = marker.split(':');
+    this.matchText = matchText.trim();
+    this.githubLabel = githubLabel?.trim() ?? this.matchText;
+  }
+};
+
 export interface ITodo {
   line: number;
   hash: string;
@@ -57,12 +73,12 @@ export const compareHash = (): boolean => {
 };
 
 export const getCommentsByMarker = async(marker: CommentMarker, filePath: string): Promise<ITodo[]> => {
-  if (!marker || marker.trim().length === 0) return [];
+  if (!marker || marker.matchText.length === 0) return [];
 
   let tokens = await getTokens(filePath);
   let comments = tokens.filter((e) => e.token instanceof Prism.Token &&
                                       e.token.type === 'comment' &&
-                                      e.token.content.toString().includes(marker) &&
+                                      e.token.content.toString().includes(marker.matchText) &&
                                       e.token.content.toString().match(markerCheck));
   let todos: ITodo[] = [];
   for(let comment of comments) {

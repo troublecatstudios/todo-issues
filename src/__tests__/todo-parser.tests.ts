@@ -1,6 +1,6 @@
 import { createHash } from 'crypto';
 import { readFile } from 'fs/promises';
-import {compareHash, getCommentsByMarker, getHash, getTitleAndReference, InvalidHashInputFilePathError, InvalidHashInputTitleError} from './../todo-parser';
+import {CommentMarker, compareHash, getCommentsByMarker, getHash, getTitleAndReference, InvalidHashInputFilePathError, InvalidHashInputTitleError} from './../todo-parser';
 import { fixture } from './fixture-helper';
 import { normalizeString } from './test-helpers';
 
@@ -14,13 +14,13 @@ describe('getCommentsByMarker', () => {
   });
 
   it('returns a promise', async () => {
-    let result = getCommentsByMarker('BUG', fixture('./no-comments.js'));
+    let result = getCommentsByMarker(new CommentMarker('BUG'), fixture('./no-comments.js'));
 
     expect(result).toBeInstanceOf(Promise);
   });
 
   it('should resolve to an array of ITODO items', async () => {
-    let result = await getCommentsByMarker('BUG', fixture('./no-comments.js'));
+    let result = await getCommentsByMarker(new CommentMarker('BUG'), fixture('./no-comments.js'));
 
     expect(result).toBeInstanceOf(Array);
     expect(result).toHaveLength(0);
@@ -28,7 +28,7 @@ describe('getCommentsByMarker', () => {
 
   describe('when the given file doesn\'t exist', () => {
     it('should return an empty array', async () => {
-      let result = await getCommentsByMarker('BUG', fixture('./no-comments.js'));
+      let result = await getCommentsByMarker(new CommentMarker('BUG'), fixture('./no-comments.js'));
 
       expect(result).toBeInstanceOf(Array);
       expect(result).toHaveLength(0);
@@ -37,7 +37,7 @@ describe('getCommentsByMarker', () => {
 
   describe('when the file doesn\'t contain any matching comments', () => {
     it('should return an empty array', async () => {
-      let result = await getCommentsByMarker('BUG', fixture('./no-comments.js'));
+      let result = await getCommentsByMarker(new CommentMarker('BUG'), fixture('./no-comments.js'));
 
       expect(result).toBeInstanceOf(Array);
       expect(result).toHaveLength(0);
@@ -47,7 +47,7 @@ describe('getCommentsByMarker', () => {
   describe('when the file contains a matching comment', () => {
     it('should return each comment in an array', async () => {
       let file = fixture('./todo-single-comment.js');
-      let result = await getCommentsByMarker('TODO', file);
+      let result = await getCommentsByMarker(new CommentMarker('TODO'), file);
 
       let first = result.at(0);
 
@@ -58,7 +58,7 @@ describe('getCommentsByMarker', () => {
     describe('each todo', () => {
       it('should contain the surrounding code', async () => {
         let file = fixture('./todo-single-comment.js');
-        let result = await getCommentsByMarker('TODO', file);
+        let result = await getCommentsByMarker(new CommentMarker('TODO'), file);
 
         let first = result.at(0);
 
@@ -75,7 +75,7 @@ describe('getCommentsByMarker', () => {
 
       it('should contain the github issue within the comment, if applicable', async () => {
         let file = fixture('./various-comment-examples.js');
-        let result = await getCommentsByMarker('TODO', file);
+        let result = await getCommentsByMarker(new CommentMarker('TODO'), file);
 
         expect(result.length).toEqual(2);
 
@@ -88,7 +88,7 @@ describe('getCommentsByMarker', () => {
 
       it('should contain a hash string that is created by getHash', async () => {
         let file = fixture('./todo-single-comment.js');
-        let result = await getCommentsByMarker('TODO', file);
+        let result = await getCommentsByMarker(new CommentMarker('TODO'), file);
 
         expect(result.length).toBeGreaterThan(0);
 

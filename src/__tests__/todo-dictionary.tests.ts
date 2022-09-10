@@ -2,7 +2,7 @@ import { existsSync } from 'fs';
 import { mkdtemp, unlink, writeFile } from 'fs/promises';
 import { tmpdir } from 'os';
 import { join } from 'path';
-import { ITodo } from '../todo-parser';
+import { CommentMarker, ITodo } from '../todo-parser';
 import { createFakeTodo } from './createFakeTodo';
 import { writeTodos, readTodos } from '../todo-dictionary';
 
@@ -26,7 +26,7 @@ describe('writeTodos', () => {
   it('should write a JSON file to the path provided', async () => {
     let todoPath = join(tmpDir, 'todos.json');
     let fakeTodos: ITodo[] = [
-      createFakeTodo('TODO', 'reference', 'This is an example todo', '/some/file.js')
+      createFakeTodo(new CommentMarker('TODO'), 'reference', 'This is an example todo', '/some/file.js')
     ];
 
     await writeTodos(fakeTodos, todoPath);
@@ -45,7 +45,7 @@ describe('readTodos', () => {
     tmpDir = await mkdtemp(join(tmpdir(), 'todo-issues-'));
     todoPath = join(tmpDir, 'todos.json');
     let fakeTodos: ITodo[] = [
-      createFakeTodo('TODO', 'reference', 'This is an example todo', '/some/file.js')
+      createFakeTodo(new CommentMarker('TODO'), 'reference', 'This is an example todo', '/some/file.js')
     ];
     let json = JSON.stringify({ todos: fakeTodos });
     await writeFile(todoPath, json);

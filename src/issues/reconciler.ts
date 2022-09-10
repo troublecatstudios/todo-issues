@@ -4,11 +4,26 @@ import { formatIssueText } from './formatter';
 import { ITodo } from '../todo-parser';
 
 export type ReconcilerOptions = {
-  dryRun: boolean
+  dryRun: boolean,
+  saveTodos: boolean,
 };
+
+function initOptions(options?: ReconcilerOptions): ReconcilerOptions {
+  const defaults = {
+    dryRun: false,
+    saveTodos: true,
+  };
+
+  return {
+    ...defaults,
+    ...options,
+  };
+}
 
 export const reconcileIssues = async (processedTodos: ITodo[], options?: ReconcilerOptions):Promise<void> => {
   let dictionary = await readTodos();
+
+  options = initOptions(options);
 
   let actions = [];
   for(var todo of dictionary.todos) {
@@ -51,6 +66,8 @@ export const reconcileIssues = async (processedTodos: ITodo[], options?: Reconci
         console.log(`${body}`);
       }
       console.log(`--------------`);
+
+      if (type !== 'CLOSE') todos.push(todo);
       continue;
     }
 
@@ -70,7 +87,7 @@ export const reconcileIssues = async (processedTodos: ITodo[], options?: Reconci
     }
   }
 
-  if (!options?.dryRun) {
+  if (options?.saveTodos) {
     await writeTodos(todos);
   }
 };

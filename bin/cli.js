@@ -52,5 +52,5 @@ console.log(markers, files, ctx);
     }
   }
 
-  await reconciler.reconcileIssues(todos, { dryRun: true });
+  await reconciler.reconcileIssues(todos, { dryRun: true, saveTodos: false });
 })();

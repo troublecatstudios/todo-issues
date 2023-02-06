@@ -2,6 +2,11 @@ name: 'coverage'
 on:
   pull_request:
 
+permissions:
+  contents: 'read'
+  id-token: 'write'
+  issues: 'write'
+
 jobs:
   coverage:
     runs-on: ubuntu-latest

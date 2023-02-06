@@ -2,7 +2,7 @@ on: push
 name: CI
 jobs:
   ci:
-    name: yarn install
+    name: Run Tests
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3

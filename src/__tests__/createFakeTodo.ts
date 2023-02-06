@@ -1,6 +1,6 @@
 import { CommentMarker, ITodo } from "../todo-parser";
 
-export const createFakeTodo = (type: CommentMarker, hash: string, title: string, filePath: string): ITodo => {
+export const createFakeTodo = (type: string, hash: string, title: string, filePath: string): ITodo => {
   let expectedCode = [
     '',
     `// ${type}:${hash ? ' [' + hash + '] ' : ' '}${title}`,
@@ -9,7 +9,7 @@ export const createFakeTodo = (type: CommentMarker, hash: string, title: string,
     '  for(var x of arguments) {'
   ].join('\r\n');
   return {
-    type,
+    type: new CommentMarker(type),
     title,
     hash,
     issue: '',

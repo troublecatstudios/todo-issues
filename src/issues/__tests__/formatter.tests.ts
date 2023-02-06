@@ -1,5 +1,5 @@
 import { formatIssueText } from '../formatter';
-import { ITodo } from '../../todo-parser';
+import { CommentMarker, ITodo } from '../../todo-parser';
 
 describe('issues/text-formatter', () => {
   it('should exist', async () => {
@@ -12,7 +12,7 @@ describe('issues/text-formatter', () => {
       hash: '',
       title: '',
       issue: '',
-      type: 'TODO',
+      type: new CommentMarker('TODO'),
       filePath: '',
       endLine: 11,
       surroundingCode: ''
@@ -27,7 +27,7 @@ describe('issues/text-formatter', () => {
       hash: '',
       title: '',
       issue: '',
-      type: 'TODO',
+      type: new CommentMarker('TODO'),
       filePath: 'something.js',
       endLine: 11,
       surroundingCode: 'blah, blah'

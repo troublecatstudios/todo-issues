@@ -2140,9 +2140,10 @@ lines-and-columns@^1.1.6:
   resolved "https://registry.yarnpkg.com/lines-and-columns/-/lines-and-columns-1.2.4.tgz#eca284f75d2965079309dc0ad9255abb2ebc1632"
   integrity sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==
 
-"linguist@https://github.com/github/linguist#v7.20.0":
+"linguist@https://github.com/github/linguist#v7.24.1":
   version "0.0.0"
-  resolved "https://github.com/github/linguist#4ffcdbcbb60a74cbfbd37656bcc3fcea4eca8e26"
+  uid "37e08a91ac3e845e308f42a1284e8ae276bb94c4"
+  resolved "https://github.com/github/linguist#37e08a91ac3e845e308f42a1284e8ae276bb94c4"
 
 locate-path@^5.0.0:
   version "5.0.0"

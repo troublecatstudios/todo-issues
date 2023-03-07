@@ -1,5 +1,6 @@
 type GlobType = typeof import('@actions/glob');
 import { Globber } from "@actions/glob";
+import { HashFileOptions } from "@actions/glob/lib/internal-hash-file-options";
 import { fixture } from "../../__tests__/fixture-helper";
 
 const _glob = jest.requireActual('@actions/glob') as GlobType;
@@ -13,6 +14,7 @@ const mockCreateGlobber: jest.MockedFunction<GlobType['create']> = jest.fn(async
   };
 });
 export default {
-  create: mockCreateGlobber
-};
+  create: mockCreateGlobber,
+  hashFiles: async (patterns: string, options?: HashFileOptions | undefined, verbose?: Boolean | undefined): Promise<string> => '',
+} as GlobType;
 export const create = mockCreateGlobber;

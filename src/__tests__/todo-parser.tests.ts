@@ -1,8 +1,40 @@
 import { createHash } from 'crypto';
 import { readFile } from 'fs/promises';
-import {CommentMarker, compareHash, getCommentsByMarker, getHash, getTitleAndReference, InvalidHashInputFilePathError, InvalidHashInputTitleError} from './../todo-parser';
+import {CommentMarker, compareHash, getCommentsByMarker, getHash, getTitleAndReference, InvalidHashInputFilePathError, InvalidHashInputTitleError, InvalidMarkersArgumentError} from './../todo-parser';
 import { fixture } from './fixture-helper';
 import { normalizeString } from './test-helpers';
+
+const undefinedValue:unknown = undefined;
+const nullValue:unknown = null;
+
+describe('CommentMarker', () => {
+  it('throws an exception if undefined is given to ctor', async () => {
+    try {
+      const m = new CommentMarker(undefinedValue as string);
+      fail();
+    } catch(e) {
+      expect(e).toBe(InvalidMarkersArgumentError);
+    }
+  });
+
+  it('throws an exception if null is given to ctor', async () => {
+    try {
+      const m = new CommentMarker(nullValue as string);
+      fail();
+    } catch(e) {
+      expect(e).toBe(InvalidMarkersArgumentError);
+    }
+  });
+
+  it('throws an exception if empty string is given to ctor', async () => {
+    try {
+      const m = new CommentMarker('');
+      fail();
+    } catch(e) {
+      expect(e).toBe(InvalidMarkersArgumentError);
+    }
+  });
+});
 
 describe('getCommentsByMarker', () => {
   it('exists', async () => {

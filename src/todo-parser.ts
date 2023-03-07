@@ -9,11 +9,16 @@ export interface ICommentMarker {
   githubLabel: string,
 };
 
+export const InvalidMarkersArgumentError = 'Invalid markers specified. Unable to parse todos.';
+
 export class CommentMarker implements ICommentMarker {
   matchText: string;
   githubLabel: string;
 
   constructor(marker: string) {
+    if (!marker) {
+      throw InvalidMarkersArgumentError;
+    }
     let [matchText, githubLabel] = marker.split(':');
     this.matchText = matchText.trim();
     this.githubLabel = githubLabel?.trim() ?? this.matchText;

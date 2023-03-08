@@ -96,7 +96,7 @@ describe('reconcileIssues', () => {
       it('should create a GitHub issue', async () => {
         await reconcileIssues(processedTodos);
         let body = await formatIssueText(todo);
-        expect(mockGitHub.createIssue).toHaveBeenCalledWith({ title: todo.title, body });
+        expect(mockGitHub.createIssue).toHaveBeenCalledWith({ title: todo.title, body, labels: ['TODO'] });
       });
 
       it('should update the dictionary entry with the GitHub Issue number', async () => {
@@ -132,7 +132,16 @@ describe('reconcileIssues', () => {
     it('should create a GitHub issue', async () => {
       await reconcileIssues(processedTodos);
       let body = await formatIssueText(todo);
-      expect(mockGitHub.createIssue).toHaveBeenCalledWith({ title: todo.title, body });
+      expect(mockGitHub.createIssue).toHaveBeenCalledWith({ title: todo.title, body, labels: ['TODO'] });
+    });
+
+    it('should add the correct issue label to the issue', async () => {
+      todo = createFakeTodo('TODO', 'hash', 'Example title', './file/path.js', 'enhancement');
+      mockInternalDictionary.todos = [];
+      processedTodos = [todo];
+      await reconcileIssues(processedTodos);
+      let body = await formatIssueText(todo);
+      expect(mockGitHub.createIssue).toHaveBeenCalledWith({ title: todo.title, body, labels: ['enhancement'] });
     });
 
     it('should update the dictionary entry with the GitHub Issue number', async () => {

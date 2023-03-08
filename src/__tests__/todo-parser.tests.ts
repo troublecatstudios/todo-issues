@@ -58,6 +58,14 @@ describe('getCommentsByMarker', () => {
     expect(result).toHaveLength(0);
   });
 
+  it('should include the issue labels in the results', async () => {
+    let result = await getCommentsByMarker(new CommentMarker('TODO:enhancement'), fixture('./todo-single-comment.js'));
+
+    expect(result).toBeInstanceOf(Array);
+    expect(result).toHaveLength(1);
+    expect(result.at(0)?.type.githubLabel).toBe('enhancement');
+  });
+
   describe('when the given file doesn\'t exist', () => {
     it('should return an empty array', async () => {
       let result = await getCommentsByMarker(new CommentMarker('BUG'), fixture('./no-comments.js'));

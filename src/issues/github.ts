@@ -7,6 +7,7 @@ import RepositoryContext from './../repository-context';
 type TaskInformation = {
   title: string;
   body: string;
+  labels?: string[];
 };
 
 type IssuesListResponse =

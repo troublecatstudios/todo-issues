@@ -72,11 +72,19 @@ export const reconcileIssues = async (processedTodos: ITodo[], options?: Reconci
     }
 
     if (type === 'UPDATE') {
-      await github.updateIssue(parseInt(todo.issue), { title: todo.title, body });
+      await github.updateIssue(parseInt(todo.issue), {
+        title: todo.title,
+        body,
+        labels: todo.type.githubLabel ? [todo.type.githubLabel] : undefined
+      });
       todos.push(todo);
     }
     if (type === 'CREATE') {
-      let issue = await github.createIssue({ title: todo.title, body });
+      let issue = await github.createIssue({
+        title: todo.title,
+        body,
+        labels: todo.type.githubLabel ? [todo.type.githubLabel] : undefined
+      });
       if (issue) {
         todo.issue = issue;
       }

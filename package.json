@@ -42,7 +42,7 @@
     "@actions/glob": "^0.4.0",
     "@actions/io": "^1.1.2",
     "@octokit/plugin-retry": "^3.0.9",
-    "@octokit/plugin-throttling": "^5.0.1",
+    "@octokit/plugin-throttling": "^5.1.1",
     "@octokit/rest": "^19.0.7",
     "eta": "^2.0.1",
     "js-yaml": "^4.1.0",

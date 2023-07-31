@@ -4,8 +4,8 @@ import { formatIssueText } from './formatter';
 import { ITodo } from '../todo-parser';
 
 export type ReconcilerOptions = {
-  dryRun: boolean,
-  saveTodos: boolean,
+  dryRun?: boolean,
+  saveTodos?: boolean,
 };
 
 function initOptions(options?: ReconcilerOptions): ReconcilerOptions {

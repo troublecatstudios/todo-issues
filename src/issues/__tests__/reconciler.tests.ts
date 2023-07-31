@@ -36,6 +36,31 @@ describe('reconcileIssues', () => {
     jest.clearAllMocks();
   });
 
+  describe('if saveTodos is true', () => {
+    let todo: ITodo;
+    let processedTodos: ITodo[];
+
+    beforeEach(async () => {
+      var preExistingTodo = createFakeTodo('BUG', 'hash2', 'Fix this bug', './another/file.js');
+      todo = createFakeTodo('TODO', 'hash', 'Example title', './file/path.js');
+      mockInternalDictionary.todos = [todo, preExistingTodo];
+      processedTodos = [todo];
+      todo.issue = '1';
+      preExistingTodo.issue = '2';
+    });
+
+    it('should write the todos to the dictionary', async () => {
+      mockGitHub.getIssue.mockReturnValueOnce({
+        state: 'open'
+      })
+      .mockReturnValueOnce({
+        state: 'open'
+      });
+      await reconcileIssues(processedTodos, { saveTodos: true });
+      expect(mockDictionary.writeTodos).toHaveBeenCalled();
+    });
+  });
+
   describe('given a marker exists in the code and the dictionary', () => {
     let todo: ITodo;
     let processedTodos: ITodo[];

@@ -594,6 +594,11 @@
   resolved "https://registry.yarnpkg.com/@octokit/openapi-types/-/openapi-types-16.0.0.tgz#d92838a6cd9fb4639ca875ddb3437f1045cc625e"
   integrity sha512-JbFWOqTJVLHZSUUoF4FzAZKYtqdxWu9Z5m2QQnOyEa04fOFljvyh7D3GYKbfuaSWisqehImiVIMG4eyJeP5VEA==
 
+"@octokit/openapi-types@^18.0.0":
+  version "18.0.0"
+  resolved "https://registry.yarnpkg.com/@octokit/openapi-types/-/openapi-types-18.0.0.tgz#f43d765b3c7533fd6fb88f3f25df079c24fccf69"
+  integrity sha512-V8GImKs3TeQRxRtXFpG2wl19V7444NIOTDF24AWuIbmNaNYOQMWRbjcGDXV5B+0n887fgDcuMNOmlul+k+oJtw==
+
 "@octokit/plugin-paginate-rest@^6.0.0":
   version "6.0.0"
   resolved "https://registry.yarnpkg.com/@octokit/plugin-paginate-rest/-/plugin-paginate-rest-6.0.0.tgz#f34b5a7d9416019126042cd7d7b811e006c0d561"
@@ -622,12 +627,12 @@
     "@octokit/types" "^6.0.3"
     bottleneck "^2.15.3"
 
-"@octokit/plugin-throttling@^5.2.1":
-  version "5.2.1"
-  resolved "https://registry.yarnpkg.com/@octokit/plugin-throttling/-/plugin-throttling-5.2.1.tgz#0600a0165bb439afaf40cf7cccae21cea7b3fd03"
-  integrity sha512-UUTFP301/gYEgsPABIP35QZR4dEXPtyoXHCQhPXU8U4FphXKjXOahoMlHg/T4IQVWMmSy607zsqThuBkpV9Gjg==
+"@octokit/plugin-throttling@^7.0.0":
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/@octokit/plugin-throttling/-/plugin-throttling-7.0.0.tgz#89f2580b43cfd5ec17f19e3939d8af549f573b0b"
+  integrity sha512-KL2k/d0uANc8XqP5S64YcNFCudR3F5AaKO39XWdUtlJIjT9Ni79ekWJ6Kj5xvAw87udkOMEPcVf9xEge2+ahew==
   dependencies:
-    "@octokit/types" "^9.0.0"
+    "@octokit/types" "^11.0.0"
     bottleneck "^2.15.3"
 
 "@octokit/request-error@^3.0.0":
@@ -660,6 +665,13 @@
     "@octokit/plugin-paginate-rest" "^6.0.0"
     "@octokit/plugin-request-log" "^1.0.4"
     "@octokit/plugin-rest-endpoint-methods" "^7.0.0"
+
+"@octokit/types@^11.0.0":
+  version "11.1.0"
+  resolved "https://registry.yarnpkg.com/@octokit/types/-/types-11.1.0.tgz#9e5db741d582b05718a4d91bac8cc987def235ea"
+  integrity sha512-Fz0+7GyLm/bHt8fwEqgvRBWwIV1S6wRRyq+V6exRKLVWaKGsuy6H9QFYeBVDV7rK6fO3XwHgQOPxv+cLj2zpXQ==
+  dependencies:
+    "@octokit/openapi-types" "^18.0.0"
 
 "@octokit/types@^6.0.3":
   version "6.34.0"

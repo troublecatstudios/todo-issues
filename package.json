@@ -25,6 +25,9 @@
   "bugs": {
     "url": "https://github.com/troublecatstudios/todo-issues/issues"
   },
+  "engines": {
+    "node": ">=16"
+  },
   "homepage": "https://github.com/troublecatstudios/todo-issues#readme",
   "devDependencies": {
     "@types/jest": "^27.4.1",

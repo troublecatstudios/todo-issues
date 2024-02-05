@@ -17,5 +17,5 @@ inputs:
     description: files to search
     default: '**'
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'lib/main.js'

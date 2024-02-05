@@ -8,6 +8,11 @@ export type ReconcilerOptions = {
   saveTodos?: boolean,
 };
 
+export type ReconcileAction = {
+  type: 'CREATE' | 'CLOSE' | 'UPDATE',
+  todo: ITodo
+};
+
 function initOptions(options?: ReconcilerOptions): ReconcilerOptions {
   const defaults = {
     dryRun: false,
@@ -25,7 +30,7 @@ export const reconcileIssues = async (processedTodos: ITodo[], options?: Reconci
 
   options = initOptions(options);
 
-  let actions = [];
+  let actions: Array<ReconcileAction> = [];
   for(var todo of dictionary.todos) {
     if (todo.issue) {
       let issue = await github.getIssue(parseInt(todo.issue));
@@ -53,7 +58,7 @@ export const reconcileIssues = async (processedTodos: ITodo[], options?: Reconci
     actions.push({ type: 'CREATE', todo: todo });
   }
 
-  let todos = [];
+  let todos: Array<ITodo> = [];
   for(var { type, todo } of actions) {
     let body = await formatIssueText(todo);
 

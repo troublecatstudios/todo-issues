@@ -13,6 +13,7 @@ export const main = async function() {
   for(const file of config.files) {
     for(const marker of config.markers) {
       const todos = await getCommentsByMarker(marker, file);
+      // insert the todos into the items array
       items.splice(0,0, ...todos);
     }
   }

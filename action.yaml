@@ -1,6 +1,9 @@
 name: 'todo-issues'
 description: 'Create and manage GitHub issues from TODO comments!'
 author: 'Jared Barboza <codeimpossible@users.noreply.github.com>'
+branding:
+  icon: 'heart'
+  color: 'red'
 inputs:
   markers:
     required: false
@@ -18,4 +21,4 @@ inputs:
     default: '**'
 runs:
   using: 'node20'
-  main: 'lib/main.js'
+  main: 'dist/index.js'

@@ -1,7 +1,18 @@
 {
   "name": "todo-issues",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "",
+  "private": true,
+  "author": "Jared Barboza",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/troublecatstudios/todo-issues.git"
+  },
+  "bugs": {
+    "url": "https://github.com/troublecatstudios/todo-issues/issues"
+  },
+  "homepage": "https://github.com/troublecatstudios/todo-issues#readme",
   "main": "index.js",
   "scripts": {
     "test": "jest --no-cache",
@@ -14,19 +25,12 @@
     "package": "ncc build src/main.ts --license licenses.txt",
     "package:watch": "npm run package -- --watch"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/troublecatstudios/todo-issues.git"
-  },
-  "author": "Jared Barboza",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/troublecatstudios/todo-issues/issues"
+  "exports": {
+    ".": "./dist/index.js"
   },
   "engines": {
     "node": ">=16"
   },
-  "homepage": "https://github.com/troublecatstudios/todo-issues#readme",
   "devDependencies": {
     "@actions/exec": "^1.1.1",
     "@types/jest": "^27.4.1",

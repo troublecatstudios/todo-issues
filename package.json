@@ -22,7 +22,7 @@
     "cli": "node ./bin/cli.js",
     "copy": "node ./.github/scripts/build-helpers/copy.js",
     "clean": "node ./.github/scripts/build-helpers/clean.js",
-    "package": "ncc build src/main.ts --license licenses.txt",
+    "package": "ncc build src/index.ts --license licenses.txt",
     "package:watch": "npm run package -- --watch"
   },
   "exports": {

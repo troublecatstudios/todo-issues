@@ -1,12 +1,12 @@
 import loader from 'prismjs/components/index';
-import Prism, {tokenize, Grammar} from 'prismjs';
+import * as prism from 'prismjs';
 import { extname } from 'path';
 import { readFile } from 'fs/promises';
 
-export const getGrammar = (fileName: string): Grammar => {
+export const getGrammar = (fileName: string): prism.Grammar => {
   loader();
   let extension = extname(fileName).substr(1);
-  return Prism.languages[extension];
+  return prism.languages[extension];
 };
 
 export type TokenWithLineData<T> = {
@@ -18,7 +18,7 @@ export type TokenList = TokenWithLineData<string | Prism.Token>[];
 
 export const getTokens = async (fileName: string): Promise<TokenList> => {
   let contents = (await readFile(fileName)).toString();
-  let tokens = tokenize(contents, getGrammar(fileName));
+  let tokens = prism.tokenize(contents, getGrammar(fileName));
   let line = 1;
   let tokensWithLines: TokenList = [];
   for (var t of tokens) {
@@ -26,11 +26,11 @@ export const getTokens = async (fileName: string): Promise<TokenList> => {
       line,
       token: t,
       endLine:
-        t instanceof Prism.Token
+        t instanceof prism.Token
           ? line + t.content.toString().split('\n').length - 1
           : line,
     });
-    if (t instanceof Prism.Token) {
+    if (t instanceof prism.Token) {
       line += t.content.toString().split('\n').length - 1;
       continue;
     }

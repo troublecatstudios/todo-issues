@@ -20143,29 +20143,29 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getTokens = exports.getGrammar = void 0;
 const index_1 = __importDefault(__nccwpck_require__(1847));
-const prismjs_1 = __importStar(__nccwpck_require__(164));
+const prism = __importStar(__nccwpck_require__(164));
 const path_1 = __nccwpck_require__(1017);
 const promises_1 = __nccwpck_require__(3292);
 const getGrammar = (fileName) => {
     (0, index_1.default)();
     let extension = (0, path_1.extname)(fileName).substr(1);
-    return prismjs_1.default.languages[extension];
+    return prism.languages[extension];
 };
 exports.getGrammar = getGrammar;
 const getTokens = async (fileName) => {
     let contents = (await (0, promises_1.readFile)(fileName)).toString();
-    let tokens = (0, prismjs_1.tokenize)(contents, (0, exports.getGrammar)(fileName));
+    let tokens = prism.tokenize(contents, (0, exports.getGrammar)(fileName));
     let line = 1;
     let tokensWithLines = [];
     for (var t of tokens) {
         tokensWithLines.push({
             line,
             token: t,
-            endLine: t instanceof prismjs_1.default.Token
+            endLine: t instanceof prism.Token
                 ? line + t.content.toString().split('\n').length - 1
                 : line,
         });
-        if (t instanceof prismjs_1.default.Token) {
+        if (t instanceof prism.Token) {
             line += t.content.toString().split('\n').length - 1;
             continue;
         }

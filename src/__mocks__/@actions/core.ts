@@ -1,11 +1,20 @@
 
 type CoreType = typeof import('@actions/core');
 
-export const getMultilineInputMock = jest.fn((): string[] => {
-  return [];
-});
+export const addInputMock = (inputName: string, mockValue: string) => {
+  if (!inputHash[inputName]) inputHash[inputName] = jest.fn((): string => mockValue);
+  inputHash[inputName].mockReturnValueOnce(mockValue);
+};
+export const addMultilineInputMock = (inputName: string, mockValue: string[]) => {
+  if (!inputHash[inputName]) inputHash[inputName] = jest.fn((): string[] => []);
+  inputHash[inputName].mockReturnValueOnce(mockValue);
+};
 
-export const getMultilineInput: CoreType['getMultilineInput'] = getMultilineInputMock;
+const inputHash: Record<string, jest.Mock> = { };
+export const getMultilineInput: CoreType['getMultilineInput'] = (name: string) => {
+  if (inputHash[name]) return inputHash[name]();
+  return undefined;
+};
 
 export const debugMock = jest.fn((): void => undefined);
 export const debug: CoreType['debug'] = debugMock;

@@ -2,15 +2,10 @@ import { loadConfig } from './config';
 import { getCommentsByMarker, ITodo } from './todo-parser';
 import { reconcileIssues } from './issues/reconciler';
 import { error, info, verbose } from './logger';
-export const NoMarkersSpecifiedError = 'No markers specified. Unable to parse todos.';
 
 export const main = async function() {
   verbose(`starting up. loading configuration.`);
   const config = await loadConfig();
-  if (!config.markers || config.markers.length === 0) {
-    error(`Error in configuration. ${NoMarkersSpecifiedError}. Please check the configuration in your GitHub action.`);
-    throw NoMarkersSpecifiedError;
-  }
 
   info(`configuration loaded.`, { fileCount: config.files.length, markers: config.markers.map(m => m.matchText) });
 

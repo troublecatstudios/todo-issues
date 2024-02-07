@@ -2,7 +2,7 @@ const path = require('path');
 const { directories, cp } = require('./utils');
 
 const filesToCopy = {
-  './src/issues/.template.eta': './dist/issues/.template.eta'
+  './src/issues/.template.eta': './dist/.template.eta'
 };
 
 (async function() {

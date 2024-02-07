@@ -20071,16 +20071,30 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.loadConfig = void 0;
+exports.loadConfig = exports.NoMarkersInputSpecifiedError = exports.NoFilesInputSpecifiedError = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const glob = __importStar(__nccwpck_require__(8090));
 const todo_parser_1 = __nccwpck_require__(5423);
 const markerInput = 'markers';
 const filesInput = 'files';
+const isInputEmpty = (input) => {
+    if (!input || input.length === 0 || input.filter(i => !!i).length === 0) {
+        return true;
+    }
+    return false;
+};
+exports.NoFilesInputSpecifiedError = 'The files action input was not specified or is empty. You must specify at least one file glob pattern in order to process TODO comments.';
+exports.NoMarkersInputSpecifiedError = 'No markers specified. Unable to parse todos.';
 const loadConfig = async () => {
     const markers = core.getMultilineInput(markerInput);
     const files = core.getMultilineInput(filesInput);
-    const globber = await glob.create(files.join('\n'));
+    if (isInputEmpty(markers)) {
+        throw exports.NoMarkersInputSpecifiedError;
+    }
+    if (isInputEmpty(files)) {
+        throw exports.NoFilesInputSpecifiedError;
+    }
+    const globber = await glob.create(files.join('\n'), { matchDirectories: false });
     const globbedFiles = await globber.glob();
     return {
         markers: parseMarkers(markers),
@@ -20484,29 +20498,99 @@ exports.reconcileIssues = reconcileIssues;
 
 /***/ }),
 
+/***/ 4636:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.error = exports.warn = exports.verbose = exports.info = void 0;
+const core = __importStar(__nccwpck_require__(2186));
+const log = (message, level = 'INFO', attributes = null) => {
+    const attrs = [];
+    if (attributes !== null) {
+        for (const key of Object.keys(attributes)) {
+            const value = attributes[key];
+            attrs.push(`${key}: ${value}`);
+        }
+    }
+    const messageParts = [
+        message,
+        attrs.length > 0 ? ` attributes=(${attrs.join(',')})` : '',
+    ];
+    const formattedMessage = messageParts.join('');
+    if (level === 'VERBOSE') {
+        core.debug(formattedMessage);
+    }
+    else if (level === 'WARN') {
+        core.warning(formattedMessage);
+    }
+    else if (level === 'ERROR') {
+        core.error(formattedMessage);
+    }
+    else {
+        core.info(formattedMessage);
+    }
+};
+const info = (message, attributes = null) => log(message, 'INFO', attributes);
+exports.info = info;
+const verbose = (message, attributes = null) => log(message, 'VERBOSE', attributes);
+exports.verbose = verbose;
+const warn = (message, attributes = null) => log(message, 'WARN', attributes);
+exports.warn = warn;
+const error = (message, attributes = null) => log(message, 'ERROR', attributes);
+exports.error = error;
+
+
+/***/ }),
+
 /***/ 399:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.main = exports.NoMarkersSpecifiedError = void 0;
+exports.main = void 0;
 const config_1 = __nccwpck_require__(6373);
 const todo_parser_1 = __nccwpck_require__(5423);
 const reconciler_1 = __nccwpck_require__(5568);
-exports.NoMarkersSpecifiedError = 'No markers specified. Unable to parse todos.';
+const logger_1 = __nccwpck_require__(4636);
 const main = async function () {
+    (0, logger_1.verbose)(`starting up. loading configuration.`);
     const config = await (0, config_1.loadConfig)();
-    if (!config.markers || config.markers.length === 0) {
-        throw exports.NoMarkersSpecifiedError;
-    }
+    (0, logger_1.info)(`configuration loaded.`, { fileCount: config.files.length, markers: config.markers.map(m => m.matchText) });
     const items = [];
     for (const file of config.files) {
         for (const marker of config.markers) {
             const todos = await (0, todo_parser_1.getCommentsByMarker)(marker, file);
+            (0, logger_1.verbose)(`file processed for markers.`, { filePath: file, marker: marker.matchText, commentCount: todos.length });
             items.splice(0, 0, ...todos);
         }
     }
+    (0, logger_1.info)(`reconciling comments against GitHub issues.`, { commentCount: items.length });
     await (0, reconciler_1.reconcileIssues)(items);
 };
 exports.main = main;

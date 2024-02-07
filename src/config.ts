@@ -1,5 +1,5 @@
 import * as core from '@actions/core';
-import glob from '@actions/glob';
+import * as glob from '@actions/glob';
 import { CommentMarker } from './todo-parser';
 
 const markerInput = 'markers';

@@ -20070,20 +20070,17 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.loadConfig = void 0;
 const core = __importStar(__nccwpck_require__(2186));
-const glob_1 = __importDefault(__nccwpck_require__(8090));
+const glob = __importStar(__nccwpck_require__(8090));
 const todo_parser_1 = __nccwpck_require__(5423);
 const markerInput = 'markers';
 const filesInput = 'files';
 const loadConfig = async () => {
     const markers = core.getMultilineInput(markerInput);
     const files = core.getMultilineInput(filesInput);
-    const globber = await glob_1.default.create(files.join('\n'));
+    const globber = await glob.create(files.join('\n'));
     const globbedFiles = await globber.glob();
     return {
         markers: parseMarkers(markers),

@@ -1,12 +1,13 @@
-import * as prismComponents from 'prismjs/components/index';
-import * as prism from 'prismjs';
+import * as prism from './../lib/prism';
 import { extname } from 'path';
 import { readFile } from 'fs/promises';
+import { verbose } from './logger';
+
+const DefaultLanguage = 'plaintext';
 
 export const getGrammar = (fileName: string): prism.Grammar => {
-  prismComponents.default();
   let extension = extname(fileName).substr(1);
-  return prism.languages[extension];
+  return prism.languages[extension] || prism.languages[DefaultLanguage];
 };
 
 export type TokenWithLineData<T> = {
@@ -17,6 +18,7 @@ export type TokenWithLineData<T> = {
 export type TokenList = TokenWithLineData<string | Prism.Token>[];
 
 export const getTokens = async (fileName: string): Promise<TokenList> => {
+  verbose(`tokenizing source file '${fileName}'`);
   let contents = (await readFile(fileName)).toString();
   let tokens = prism.tokenize(contents, getGrammar(fileName));
   let line = 1;

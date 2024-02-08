@@ -1,5 +1,5 @@
 import { readFile } from "fs/promises";
-import Prism from "prismjs";
+import * as Prism from './../../lib/prism';
 import { getGrammar, getTokens } from "../grammar";
 import { fixture } from "./fixture-helper";
 
@@ -17,6 +17,15 @@ describe('getGrammar', () => {
 
     expect(result).toBe(expectedGrammar);
   });
+
+  it('returns plaintext for unknown file types', async () => {
+    let file = fixture('./unknown');
+    let result = getGrammar(file);
+
+    let expectedGrammar = Prism.languages['plaintext'];
+
+    expect(result).toBe(expectedGrammar);
+  });
 });
 
 describe('getTokens', () => {
@@ -27,6 +36,10 @@ describe('getTokens', () => {
 
   describe('when the given file matches a prism grammar', () => {
     const fixtures = [
+      {
+        fixture: fixture('./unknown'),
+        expect: []
+      },
       {
         fixture: fixture('./only-multi-comment.js'),
         expect: [

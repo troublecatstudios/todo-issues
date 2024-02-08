@@ -1,7 +1,7 @@
 import { match } from "assert";
 import { createHash } from "crypto";
 import { readFile } from "fs/promises";
-import Prism from "prismjs";
+import * as Prism from './../lib/prism';
 import { getTokens, TokenWithLineData } from "./grammar";
 
 export interface ICommentMarker {

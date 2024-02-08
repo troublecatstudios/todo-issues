@@ -20137,17 +20137,14 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getTokens = exports.getGrammar = void 0;
-const index_1 = __importDefault(__nccwpck_require__(1847));
+const prismComponents = __importStar(__nccwpck_require__(1847));
 const prism = __importStar(__nccwpck_require__(164));
 const path_1 = __nccwpck_require__(1017);
 const promises_1 = __nccwpck_require__(3292);
 const getGrammar = (fileName) => {
-    (0, index_1.default)();
+    prismComponents.default();
     let extension = (0, path_1.extname)(fileName).substr(1);
     return prism.languages[extension];
 };

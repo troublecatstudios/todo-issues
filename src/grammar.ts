@@ -1,10 +1,10 @@
-import loader from 'prismjs/components/index';
+import * as prismComponents from 'prismjs/components/index';
 import * as prism from 'prismjs';
 import { extname } from 'path';
 import { readFile } from 'fs/promises';
 
 export const getGrammar = (fileName: string): prism.Grammar => {
-  loader();
+  prismComponents.default();
   let extension = extname(fileName).substr(1);
   return prism.languages[extension];
 };

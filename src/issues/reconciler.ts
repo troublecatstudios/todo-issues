@@ -2,6 +2,7 @@ import * as github from './github';
 import { readTodos, writeTodos } from './../todo-dictionary';
 import { formatIssueText } from './formatter';
 import { ITodo } from '../todo-parser';
+import { publish } from '../hooks';
 
 export type ReconcilerOptions = {
   dryRun?: boolean,
@@ -82,6 +83,7 @@ export const reconcileIssues = async (processedTodos: ITodo[], options?: Reconci
         body,
         labels: todo.type.githubLabel ? [todo.type.githubLabel] : undefined
       });
+      publish('IssueUpdated', { issueNumber: parseInt(todo.issue), todo });
       todos.push(todo);
     }
     if (type === 'CREATE') {
@@ -93,10 +95,12 @@ export const reconcileIssues = async (processedTodos: ITodo[], options?: Reconci
       if (issue) {
         todo.issue = issue;
       }
+      publish('IssueCreated', { issueNumber: parseInt(todo.issue), todo });
       todos.push(todo);
     }
     if (type === 'CLOSE') {
       await github.completeIssue(parseInt(todo.issue));
+      publish('IssueClosed', { issueNumber: parseInt(todo.issue), todo });
     }
   }
 

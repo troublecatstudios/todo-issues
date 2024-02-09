@@ -3,6 +3,7 @@ import { createHash } from "crypto";
 import { readFile } from "fs/promises";
 import * as Prism from './../lib/prism';
 import { getTokens, TokenWithLineData } from "./grammar";
+import { publish } from "./hooks";
 
 export interface ICommentMarker {
   matchText: string,
@@ -89,6 +90,10 @@ export const getCommentsByMarker = async(marker: CommentMarker, filePath: string
   for(let comment of comments) {
     let todo = await createTodo(comment as TokenWithLineData<Prism.Token>, marker, filePath);
     todos.push(todo);
+  }
+
+  if (todos.length > 0) {
+    publish('FileParsed', { filePath, todos });
   }
 
   return todos;

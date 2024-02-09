@@ -4,6 +4,21 @@ import { CommentMarker } from './todo-parser';
 
 const markerInput = 'markers';
 const filesInput = 'files';
+const emojiLookups = {
+  issueTypes: {
+    'bug': '🐛',
+    'fixme': '🔨',
+    'hack': '⚙️',
+    'dragon': '🐉'
+  },
+  statuses: {
+    'new': '🪄',
+    'updated': '✏️',
+    'closed': '✅'
+  },
+};
+
+let _cachedConfig: TodoIssuesConfig | null = null;
 
 const isInputEmpty = (input: string[] | undefined | null) => {
   if (!input || input.length === 0 || input.filter(i => !!i).length === 0) {
@@ -18,6 +33,17 @@ export const NoMarkersInputSpecifiedError = 'No markers specified. Unable to par
 export type TodoIssuesConfig = {
   markers: CommentMarker[],
   files: string[],
+  emoji: {
+    issueTypes: Record<string, string>,
+    statuses: Record<string, string>,
+  }
+};
+
+export const getConfig = async (): Promise<TodoIssuesConfig> => {
+  if (!_cachedConfig) {
+    _cachedConfig = await loadConfig();
+  }
+  return _cachedConfig;
 };
 
 export const loadConfig = async (): Promise<TodoIssuesConfig> => {
@@ -31,10 +57,12 @@ export const loadConfig = async (): Promise<TodoIssuesConfig> => {
   }
   const globber = await glob.create(files.join('\n'), { matchDirectories: false });
   const globbedFiles = await globber.glob();
-  return {
+  _cachedConfig = {
     markers: parseMarkers(markers),
     files: globbedFiles,
+    emoji: emojiLookups
   };
+  return _cachedConfig;
 };
 
 const parseMarkers = (markers: string[]): CommentMarker[] => {

@@ -39603,12 +39603,26 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.loadConfig = exports.NoMarkersInputSpecifiedError = exports.NoFilesInputSpecifiedError = void 0;
+exports.loadConfig = exports.getConfig = exports.NoMarkersInputSpecifiedError = exports.NoFilesInputSpecifiedError = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const glob = __importStar(__nccwpck_require__(8090));
 const todo_parser_1 = __nccwpck_require__(5423);
 const markerInput = 'markers';
 const filesInput = 'files';
+const emojiLookups = {
+    issueTypes: {
+        'bug': '🐛',
+        'fixme': '🔨',
+        'hack': '⚙️',
+        'dragon': '🐉'
+    },
+    statuses: {
+        'new': '🪄',
+        'updated': '✏️',
+        'closed': '✅'
+    },
+};
+let _cachedConfig = null;
 const isInputEmpty = (input) => {
     if (!input || input.length === 0 || input.filter(i => !!i).length === 0) {
         return true;
@@ -39617,6 +39631,13 @@ const isInputEmpty = (input) => {
 };
 exports.NoFilesInputSpecifiedError = 'The files action input was not specified or is empty. You must specify at least one file glob pattern in order to process TODO comments.';
 exports.NoMarkersInputSpecifiedError = 'No markers specified. Unable to parse todos.';
+const getConfig = async () => {
+    if (!_cachedConfig) {
+        _cachedConfig = await (0, exports.loadConfig)();
+    }
+    return _cachedConfig;
+};
+exports.getConfig = getConfig;
 const loadConfig = async () => {
     const markers = core.getMultilineInput(markerInput);
     const files = core.getMultilineInput(filesInput);
@@ -39628,10 +39649,12 @@ const loadConfig = async () => {
     }
     const globber = await glob.create(files.join('\n'), { matchDirectories: false });
     const globbedFiles = await globber.glob();
-    return {
+    _cachedConfig = {
         markers: parseMarkers(markers),
         files: globbedFiles,
+        emoji: emojiLookups
     };
+    return _cachedConfig;
 };
 exports.loadConfig = loadConfig;
 const parseMarkers = (markers) => {
@@ -39704,6 +39727,50 @@ const getTokens = async (fileName) => {
     return tokensWithLines;
 };
 exports.getTokens = getTokens;
+
+
+/***/ }),
+
+/***/ 6554:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.unsubscribeAll = exports.unsubscribe = exports.subscribe = exports.publish = void 0;
+const _hookRegistry = {
+    IssueCreated: [],
+    IssueClosed: [],
+    IssueUpdated: [],
+    FileParsed: [],
+};
+const publish = async (hookName, payload) => {
+    for (const ev of _hookRegistry[hookName]) {
+        await ev(payload);
+    }
+};
+exports.publish = publish;
+const subscribe = (hookName, handler) => {
+    _hookRegistry[hookName].push(handler);
+};
+exports.subscribe = subscribe;
+const unsubscribe = (hookName, handler) => {
+    _hookRegistry[hookName] = _hookRegistry[hookName].filter(ev => ev !== handler);
+};
+exports.unsubscribe = unsubscribe;
+const unsubscribeAll = (hookName) => {
+    if (hookName) {
+        _hookRegistry[hookName] = [];
+    }
+    else {
+        for (const key of Object.keys(_hookRegistry)) {
+            if (key) {
+                (0, exports.unsubscribeAll)(key);
+            }
+        }
+    }
+};
+exports.unsubscribeAll = unsubscribeAll;
 
 
 /***/ }),
@@ -39940,6 +40007,7 @@ exports.reconcileIssues = void 0;
 const github = __importStar(__nccwpck_require__(5025));
 const todo_dictionary_1 = __nccwpck_require__(3972);
 const formatter_1 = __nccwpck_require__(6216);
+const hooks_1 = __nccwpck_require__(6554);
 function initOptions(options) {
     const defaults = {
         dryRun: false,
@@ -40001,6 +40069,7 @@ const reconcileIssues = async (processedTodos, options) => {
                 body,
                 labels: todo.type.githubLabel ? [todo.type.githubLabel] : undefined
             });
+            (0, hooks_1.publish)('IssueUpdated', { issueNumber: parseInt(todo.issue), todo });
             todos.push(todo);
         }
         if (type === 'CREATE') {
@@ -40012,10 +40081,12 @@ const reconcileIssues = async (processedTodos, options) => {
             if (issue) {
                 todo.issue = issue;
             }
+            (0, hooks_1.publish)('IssueCreated', { issueNumber: parseInt(todo.issue), todo });
             todos.push(todo);
         }
         if (type === 'CLOSE') {
             await github.completeIssue(parseInt(todo.issue));
+            (0, hooks_1.publish)('IssueClosed', { issueNumber: parseInt(todo.issue), todo });
         }
     }
     if (options?.saveTodos) {
@@ -40107,8 +40178,10 @@ const config_1 = __nccwpck_require__(6373);
 const todo_parser_1 = __nccwpck_require__(5423);
 const reconciler_1 = __nccwpck_require__(5568);
 const logger_1 = __nccwpck_require__(4636);
+const summary_writer_1 = __nccwpck_require__(6349);
 const main = async function () {
     (0, logger_1.verbose)(`starting up. loading configuration.`);
+    (0, summary_writer_1.setupListeners)();
     const config = await (0, config_1.loadConfig)();
     (0, logger_1.info)(`configuration loaded.`, { fileCount: config.files.length, markers: config.markers.map(m => m.matchText) });
     const items = [];
@@ -40121,6 +40194,7 @@ const main = async function () {
     }
     (0, logger_1.info)(`reconciling comments against GitHub issues.`, { commentCount: items.length });
     await (0, reconciler_1.reconcileIssues)(items);
+    await (0, summary_writer_1.writeSummary)();
 };
 exports.main = main;
 
@@ -40152,6 +40226,85 @@ const context = {
         (event && event.repository && event.repository.default_branch),
 };
 exports["default"] = context;
+
+
+/***/ }),
+
+/***/ 6349:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.writeSummary = exports.setupListeners = exports.addIssueResult = exports.addSummaryFactoid = void 0;
+const core = __importStar(__nccwpck_require__(2186));
+const hooks_1 = __nccwpck_require__(6554);
+const factoids = [];
+const issueSummaryTableItems = [
+    [{ data: 'Issue', header: true }, { data: 'Status', header: true }],
+];
+const counters = {
+    filesProcessed: 0,
+    todosFound: 0,
+};
+const addSummaryFactoid = (fact) => {
+    factoids.push(fact);
+};
+exports.addSummaryFactoid = addSummaryFactoid;
+const addIssueResult = (issueNumber, status) => {
+    issueSummaryTableItems.push([`${issueNumber}`, status.type]);
+};
+exports.addIssueResult = addIssueResult;
+const setupListeners = () => {
+    (0, hooks_1.subscribe)('FileParsed', async (payload) => {
+        counters.filesProcessed++;
+        counters.todosFound += payload.todos.length;
+    });
+    (0, hooks_1.subscribe)('IssueCreated', async (payload) => {
+        issueSummaryTableItems.push([`${payload.issueNumber}`, 'CREATED']);
+    });
+    (0, hooks_1.subscribe)('IssueUpdated', async (payload) => {
+        issueSummaryTableItems.push([`${payload.issueNumber}`, 'UPDATED']);
+    });
+    (0, hooks_1.subscribe)('IssueClosed', async (payload) => {
+        issueSummaryTableItems.push([`${payload.issueNumber}`, 'CLOSED']);
+    });
+};
+exports.setupListeners = setupListeners;
+const writeSummary = async () => {
+    await core.summary
+        .addHeading('TODO Issues Results')
+        .addTable(issueSummaryTableItems)
+        .addList([
+        `${counters.filesProcessed} files were processed`,
+        `${counters.todosFound} TODOs were found`
+    ], false)
+        .write();
+};
+exports.writeSummary = writeSummary;
 
 
 /***/ }),
@@ -40256,6 +40409,7 @@ const crypto_1 = __nccwpck_require__(6113);
 const promises_1 = __nccwpck_require__(3292);
 const Prism = __importStar(__nccwpck_require__(5400));
 const grammar_1 = __nccwpck_require__(9353);
+const hooks_1 = __nccwpck_require__(6554);
 ;
 exports.InvalidMarkersArgumentError = 'Invalid markers specified. Unable to parse todos.';
 class CommentMarker {
@@ -40317,6 +40471,9 @@ const getCommentsByMarker = async (marker, filePath) => {
     for (let comment of comments) {
         let todo = await createTodo(comment, marker, filePath);
         todos.push(todo);
+    }
+    if (todos.length > 0) {
+        (0, hooks_1.publish)('FileParsed', { filePath, todos });
     }
     return todos;
 };

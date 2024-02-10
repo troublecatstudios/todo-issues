@@ -28,15 +28,15 @@ export const setupListeners = (): void => {
   });
 
   subscribe('IssueCreated', async (payload) => {
-    issueSummaryTableItems.push([`${payload.issueNumber}`, 'CREATED']);
+    issueSummaryTableItems.push([`${payload.issueId}`, 'CREATED']);
   });
 
   subscribe('IssueUpdated', async (payload) => {
-    issueSummaryTableItems.push([`${payload.issueNumber}`, 'UPDATED']);
+    issueSummaryTableItems.push([`${payload.issueId}`, 'UPDATED']);
   });
 
   subscribe('IssueClosed', async (payload) => {
-    issueSummaryTableItems.push([`${payload.issueNumber}`, 'CLOSED']);
+    issueSummaryTableItems.push([`${payload.issueId}`, 'CLOSED']);
   });
 };
 

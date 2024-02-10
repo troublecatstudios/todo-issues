@@ -40069,7 +40069,7 @@ const reconcileIssues = async (processedTodos, options) => {
                 body,
                 labels: todo.type.githubLabel ? [todo.type.githubLabel] : undefined
             });
-            (0, hooks_1.publish)('IssueUpdated', { issueNumber: parseInt(todo.issue), todo });
+            (0, hooks_1.publish)('IssueUpdated', { issueId: todo.issue, todo });
             todos.push(todo);
         }
         if (type === 'CREATE') {
@@ -40081,12 +40081,12 @@ const reconcileIssues = async (processedTodos, options) => {
             if (issue) {
                 todo.issue = issue;
             }
-            (0, hooks_1.publish)('IssueCreated', { issueNumber: parseInt(todo.issue), todo });
+            (0, hooks_1.publish)('IssueCreated', { issueId: todo.issue, todo });
             todos.push(todo);
         }
         if (type === 'CLOSE') {
             await github.completeIssue(parseInt(todo.issue));
-            (0, hooks_1.publish)('IssueClosed', { issueNumber: parseInt(todo.issue), todo });
+            (0, hooks_1.publish)('IssueClosed', { issueId: todo.issue, todo });
         }
     }
     if (options?.saveTodos) {
@@ -40284,13 +40284,13 @@ const setupListeners = () => {
         counters.todosFound += payload.todos.length;
     });
     (0, hooks_1.subscribe)('IssueCreated', async (payload) => {
-        issueSummaryTableItems.push([`${payload.issueNumber}`, 'CREATED']);
+        issueSummaryTableItems.push([`${payload.issueId}`, 'CREATED']);
     });
     (0, hooks_1.subscribe)('IssueUpdated', async (payload) => {
-        issueSummaryTableItems.push([`${payload.issueNumber}`, 'UPDATED']);
+        issueSummaryTableItems.push([`${payload.issueId}`, 'UPDATED']);
     });
     (0, hooks_1.subscribe)('IssueClosed', async (payload) => {
-        issueSummaryTableItems.push([`${payload.issueNumber}`, 'CLOSED']);
+        issueSummaryTableItems.push([`${payload.issueId}`, 'CLOSED']);
     });
 };
 exports.setupListeners = setupListeners;

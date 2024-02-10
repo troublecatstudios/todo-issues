@@ -83,7 +83,7 @@ export const reconcileIssues = async (processedTodos: ITodo[], options?: Reconci
         body,
         labels: todo.type.githubLabel ? [todo.type.githubLabel] : undefined
       });
-      publish('IssueUpdated', { issueNumber: parseInt(todo.issue), todo });
+      publish('IssueUpdated', { issueId: todo.issue, todo });
       todos.push(todo);
     }
     if (type === 'CREATE') {
@@ -95,12 +95,12 @@ export const reconcileIssues = async (processedTodos: ITodo[], options?: Reconci
       if (issue) {
         todo.issue = issue;
       }
-      publish('IssueCreated', { issueNumber: parseInt(todo.issue), todo });
+      publish('IssueCreated', { issueId: todo.issue, todo });
       todos.push(todo);
     }
     if (type === 'CLOSE') {
       await github.completeIssue(parseInt(todo.issue));
-      publish('IssueClosed', { issueNumber: parseInt(todo.issue), todo });
+      publish('IssueClosed', { issueId: todo.issue, todo });
     }
   }
 

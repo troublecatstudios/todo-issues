@@ -8,7 +8,7 @@ const _hookRegistry: Registry = {
 };
 
 type IssueHookPayload = {
-  issueNumber: number,
+  issueId: string,
 };
 
 type FileHookPayload = {

@@ -39846,19 +39846,20 @@ const rest_1 = __nccwpck_require__(5375);
 const plugin_retry_1 = __nccwpck_require__(6298);
 const plugin_throttling_1 = __nccwpck_require__(9968);
 const repository_context_1 = __importDefault(__nccwpck_require__(3451));
+const logger_1 = __nccwpck_require__(4636);
 const Octo = rest_1.Octokit.plugin(plugin_retry_1.retry, plugin_throttling_1.throttling);
 const octokit = new Octo({
     auth: `token ${process.env.GITHUB_TOKEN}`,
     throttle: {
         onRateLimit: (retryAfter, options) => {
-            octokit.log.warn(`Request quota exhausted for request ${options.method} ${options.url}`);
+            (0, logger_1.warn)(`Request quota exhausted for request ${options.method} ${options.url}`);
             if (options.request.retryCount === 0) {
-                octokit.log.info(`Retrying after ${retryAfter} seconds!`);
+                (0, logger_1.info)(`Retrying after ${retryAfter} seconds!`);
                 return true;
             }
         },
         onAbuseLimit: (retryAfter, options) => {
-            octokit.log.warn(`Abuse detected for request ${options.method} ${options.url}`);
+            (0, logger_1.warn)(`Abuse detected for request ${options.method} ${options.url}`);
         },
     },
     retry: {
@@ -39875,6 +39876,12 @@ async function getIssue(issueNumber) {
         return issue.data;
     }
     catch (e) {
+        if (typeof e === "string") {
+            (0, logger_1.error)(`error trying to fetch issue. ${e}`, { issueNumber });
+        }
+        else if (e instanceof Error) {
+            (0, logger_1.error)(`error trying to fetch issue. ${e}`, { issueNumber });
+        }
         return null;
     }
 }
@@ -39899,17 +39906,33 @@ async function createIssue(information) {
         return result.data.number ? `#${result.data.number}` : null;
     }
     catch (e) {
+        if (typeof e === "string") {
+            (0, logger_1.error)(`error trying to create issue. ${e}`, { title: information.title, body: information.body });
+        }
+        else if (e instanceof Error) {
+            (0, logger_1.error)(`error trying to create issue. ${e}`, { title: information.title, body: information.body });
+        }
         return null;
     }
 }
 exports.createIssue = createIssue;
 async function completeIssue(issueNumber) {
-    const result = await octokit.issues.update({
-        owner: repository_context_1.default.repositoryOwner,
-        repo: repository_context_1.default.repositoryName,
-        issue_number: issueNumber,
-        state: 'closed',
-    });
+    try {
+        const result = await octokit.issues.update({
+            owner: repository_context_1.default.repositoryOwner,
+            repo: repository_context_1.default.repositoryName,
+            issue_number: issueNumber,
+            state: 'closed',
+        });
+    }
+    catch (e) {
+        if (typeof e === "string") {
+            (0, logger_1.error)(`error trying to complete issue. ${e}`, { issueNumber });
+        }
+        else if (e instanceof Error) {
+            (0, logger_1.error)(`error trying to complete issue. ${e}`, { issueNumber });
+        }
+    }
 }
 exports.completeIssue = completeIssue;
 async function updateIssue(issueNumber, information) {
@@ -39924,6 +39947,12 @@ async function updateIssue(issueNumber, information) {
         return true;
     }
     catch (e) {
+        if (typeof e === "string") {
+            (0, logger_1.error)(`error trying to complete issue. ${e}`, { issueNumber, title: information.title, body: information.body });
+        }
+        else if (e instanceof Error) {
+            (0, logger_1.error)(`error trying to complete issue. ${e}`, { issueNumber, title: information.title, body: information.body });
+        }
         return false;
     }
 }
@@ -40155,13 +40184,13 @@ const log = (message, level = 'INFO', attributes = null) => {
         core.info(formattedMessage);
     }
 };
-const info = (message, attributes = null) => log(message, 'INFO', attributes);
+const info = (message, attributes) => log(message, 'INFO', attributes);
 exports.info = info;
-const verbose = (message, attributes = null) => log(message, 'VERBOSE', attributes);
+const verbose = (message, attributes) => log(message, 'VERBOSE', attributes);
 exports.verbose = verbose;
-const warn = (message, attributes = null) => log(message, 'WARN', attributes);
+const warn = (message, attributes) => log(message, 'WARN', attributes);
 exports.warn = warn;
-const error = (message, attributes = null) => log(message, 'ERROR', attributes);
+const error = (message, attributes) => log(message, 'ERROR', attributes);
 exports.error = error;
 
 

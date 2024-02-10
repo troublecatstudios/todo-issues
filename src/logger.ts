@@ -30,7 +30,7 @@ const log = (message: string | Error, level: LogLevel = 'INFO', attributes: LogA
   }
 };
 
-export const info = (message: string | Error, attributes: LogAttributes | null = null): void => log(message, 'INFO', attributes);
-export const verbose = (message: string | Error, attributes: LogAttributes | null = null): void => log(message, 'VERBOSE', attributes);
-export const warn = (message: string | Error, attributes: LogAttributes | null = null): void => log(message, 'WARN', attributes);
-export const error = (message: string | Error, attributes: LogAttributes | null = null): void => log(message, 'ERROR', attributes);
+export const info = (message: string | Error, attributes?: LogAttributes | null): void => log(message, 'INFO', attributes);
+export const verbose = (message: string | Error, attributes?: LogAttributes | null): void => log(message, 'VERBOSE', attributes);
+export const warn = (message: string | Error, attributes?: LogAttributes | null): void => log(message, 'WARN', attributes);
+export const error = (message: string | Error, attributes?: LogAttributes | null): void => log(message, 'ERROR', attributes);

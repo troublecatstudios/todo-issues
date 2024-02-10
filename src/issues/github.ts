@@ -1,7 +1,5 @@
-import {Octokit, RestEndpointMethodTypes} from '@octokit/rest';
-import {Endpoints} from '@octokit/types';
-import {retry} from '@octokit/plugin-retry';
-import {throttling} from '@octokit/plugin-throttling';
+import * as github from '@actions/github';
+import * as core from '@actions/core';
 import RepositoryContext from './../repository-context';
 import { error, info, warn } from '../logger';
 
@@ -11,41 +9,12 @@ type TaskInformation = {
   labels?: string[];
 };
 
-type IssuesListResponse =
-  Endpoints['GET /repos/{owner}/{repo}/issues']['response']['data'];
+const token = core.getInput('githubToken', { required: true });
+const octokit = github.getOctokit(token);
 
-type GetIssueResponse = RestEndpointMethodTypes["issues"]["get"]["response"]["data"];
-
-const Octo = Octokit.plugin(retry, throttling);
-const octokit = new Octo({
-  auth: `token ${process.env.GITHUB_TOKEN}`,
-  throttle: {
-    onRateLimit: (retryAfter: any, options: any) => {
-      warn(
-        `Request quota exhausted for request ${options.method} ${options.url}`,
-      );
-
-      if (options.request.retryCount === 0) {
-        // only retries once
-        info(`Retrying after ${retryAfter} seconds!`);
-        return true;
-      }
-    },
-    onAbuseLimit: (retryAfter: any, options: any) => {
-      // does not retry, only logs a warning
-      warn(
-        `Abuse detected for request ${options.method} ${options.url}`,
-      );
-    },
-  },
-  retry: {
-    doNotRetry: ['429'],
-  },
-});
-
-export async function getIssue(issueNumber: number): Promise<GetIssueResponse | null> {
+export async function getIssue(issueNumber: number) {
   try {
-    const issue = await octokit.issues.get({
+    const issue = await octokit.rest.issues.get({
       owner: RepositoryContext.repositoryOwner,
       repo: RepositoryContext.repositoryName,
       issue_number: issueNumber
@@ -61,7 +30,7 @@ export async function getIssue(issueNumber: number): Promise<GetIssueResponse | 
   }
 }
 
-export async function getAllIssues(): Promise<IssuesListResponse> {
+export async function getAllIssues() {
   const issues = await octokit.paginate(octokit.rest.issues.listForRepo, {
     owner: RepositoryContext.repositoryOwner,
     repo: RepositoryContext.repositoryName,
@@ -94,7 +63,7 @@ export async function createIssue(
 
 export async function completeIssue(issueNumber: number): Promise<void> {
   try {
-    const result = await octokit.issues.update({
+    const result = await octokit.rest.issues.update({
       owner: RepositoryContext.repositoryOwner,
       repo: RepositoryContext.repositoryName,
       issue_number: issueNumber,
@@ -114,7 +83,7 @@ export async function updateIssue(
   information: TaskInformation,
 ): Promise<boolean> {
   try {
-    const result = await octokit.issues.update({
+    const result = await octokit.rest.issues.update({
       owner: RepositoryContext.repositoryOwner,
       repo: RepositoryContext.repositoryName,
       issue_number: issueNumber,

@@ -5,6 +5,9 @@ branding:
   icon: 'heart'
   color: 'red'
 inputs:
+  githubToken:
+    required: true
+    description: 'The github token. Normally this should be ${{ secrets.GITHUB_TOKEN }}'
   markers:
     required: false
     description: 'The types of coments to search for'

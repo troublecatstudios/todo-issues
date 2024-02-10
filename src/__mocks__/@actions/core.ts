@@ -1,3 +1,4 @@
+import { InputOptions } from '@actions/core';
 
 type CoreType = typeof import('@actions/core');
 
@@ -15,6 +16,11 @@ export const getMultilineInput: CoreType['getMultilineInput'] = (name: string) =
   if (inputHash[name]) return inputHash[name]();
   return undefined;
 };
+
+export const getInput: CoreType['getInput'] = (name: string, options?: InputOptions | undefined) => {
+  if (inputHash[name]) return inputHash[name]();
+  return undefined;
+}
 
 export const debugMock = jest.fn((): void => undefined);
 export const debug: CoreType['debug'] = debugMock;

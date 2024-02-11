@@ -2,6 +2,7 @@ import * as github from '@actions/github';
 import * as core from '@actions/core';
 import RepositoryContext from './../repository-context';
 import { error, info, warn } from '../logger';
+import { RestEndpointMethodTypes } from '@octokit/rest';
 
 type TaskInformation = {
   title: string;
@@ -9,10 +10,12 @@ type TaskInformation = {
   labels?: string[];
 };
 
+export type GitHubApiIssue = Pick<RestEndpointMethodTypes["issues"]["get"]["response"]["data"], "number" | "title" | "state" | "body" | "url" | "pull_request">;
+
 const token = core.getInput('githubToken', { required: true });
 const octokit = github.getOctokit(token);
 
-export async function getIssue(issueNumber: number) {
+export async function getIssue(issueNumber: number): Promise<GitHubApiIssue | null> {
   try {
     const issue = await octokit.rest.issues.get({
       owner: RepositoryContext.repositoryOwner,
@@ -30,13 +33,13 @@ export async function getIssue(issueNumber: number) {
   }
 }
 
-export async function getAllIssues() {
-  const issues = await octokit.paginate(octokit.rest.issues.listForRepo, {
+export async function getAllIssues(): Promise<GitHubApiIssue[]> {
+  const issues = await octokit.rest.issues.listForRepo({
     owner: RepositoryContext.repositoryOwner,
     repo: RepositoryContext.repositoryName,
   });
 
-  const notPrs = issues.filter(i => !i.pull_request);
+  const notPrs = issues.data.filter(i => !i.pull_request);
   return notPrs;
 }
 

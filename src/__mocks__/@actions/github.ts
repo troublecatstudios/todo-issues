@@ -1,5 +1,6 @@
 import { OctokitOptions, OctokitPlugin } from '@octokit/core/dist-types/types';
 import { GitHub } from '@actions/github/lib/utils';
+import { Octokit } from '@octokit/rest';
 
 type GitHubType = typeof import('@actions/github');
 
@@ -15,5 +16,5 @@ export const mockGitHub = {
 };
 
 export const getOctokit = (token: string, options?: OctokitOptions, ...additionalPlugins: OctokitPlugin[]):any => {
-  return mockGitHub;
+  return new Octokit();
 };

@@ -12,7 +12,7 @@ describe('the configuration', () => {
 
   describe('the markers property', () => {
     describe('when empty', () => {
-      it('shoudl throw an error', async () => {
+      it('should throw an error', async () => {
         try {
           const config = await loadConfig();
           fail();

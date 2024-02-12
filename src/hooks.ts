@@ -8,7 +8,7 @@ const _hookRegistry: Registry = {
 };
 
 type IssueHookPayload = {
-  issueId: string,
+  issueId: number,
 };
 
 type FileHookPayload = {
@@ -25,7 +25,7 @@ type ManyTodosHookPayload = {
 
 type HookPayloads = {
   IssueCreated: IssueHookPayload & TodoHookPayload,
-  IssueClosed: IssueHookPayload & TodoHookPayload,
+  IssueClosed: IssueHookPayload,
   IssueUpdated: IssueHookPayload & TodoHookPayload,
   FileParsed: FileHookPayload & ManyTodosHookPayload,
 };

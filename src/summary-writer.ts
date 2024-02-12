@@ -1,5 +1,4 @@
 import * as core from '@actions/core'
-import { ReconcileAction } from './issues/reconciler';
 import { SummaryTableRow } from '@actions/core/lib/summary';
 import { getConfig } from './config';
 import { subscribe } from './hooks';
@@ -11,14 +10,6 @@ const issueSummaryTableItems:SummaryTableRow[] = [
 const counters = {
   filesProcessed: 0,
   todosFound: 0,
-};
-
-export const addSummaryFactoid = (fact: string):void => {
-  factoids.push(fact);
-};
-
-export const addIssueResult = (issueNumber: number, status: ReconcileAction):void => {
-  issueSummaryTableItems.push([`${issueNumber}`, status.type]);
 };
 
 export const setupListeners = (): void => {

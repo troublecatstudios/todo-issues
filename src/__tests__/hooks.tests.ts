@@ -3,7 +3,7 @@ import { createFakeTodo } from './createFakeTodo';
 
 describe('the hooks event system', () => {
 
-  const fakeUpdateEvent = { issueId: '#10', todo: createFakeTodo('TODO', 'abcde', '', '') };
+  const fakeUpdateEvent = { issueId: 10, todo: createFakeTodo({ hash: 'abcde' }, 'TODO') };
 
   beforeEach(() => {
     unsubscribeAll();

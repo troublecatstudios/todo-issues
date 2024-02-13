@@ -7,7 +7,7 @@ import { publish } from "./hooks";
 
 export interface ICommentMarker {
   matchText: string,
-  githubLabel: string,
+  githubLabel: string | undefined,
 };
 
 export const InvalidMarkersArgumentError = 'Invalid markers specified. Unable to parse todos.';
@@ -22,7 +22,7 @@ export class CommentMarker implements ICommentMarker {
     }
     let [matchText, githubLabel] = marker.split(':');
     this.matchText = matchText.trim();
-    this.githubLabel = githubLabel?.trim() ?? this.matchText;
+    this.githubLabel = githubLabel?.trim() ?? undefined;
   }
 };
 

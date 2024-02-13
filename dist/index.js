@@ -58271,6 +58271,9 @@ const isIssueNeedingUpdate = (issue, todo) => {
     if (issue.title !== todo.title || issue.metadata.line !== todo.line || issue.metadata.filePath !== todo.filePath) {
         return true;
     }
+    if (todo.type.githubLabel && !issue.labels.map(l => typeof l === 'string' ? l : l.name).find(l => l === todo.type.githubLabel)) {
+        return true;
+    }
     return false;
 };
 const reconcileIssues = async (processedTodos) => {
@@ -58551,7 +58554,7 @@ class CommentMarker {
         }
         let [matchText, githubLabel] = marker.split(':');
         this.matchText = matchText.trim();
-        this.githubLabel = githubLabel?.trim() ?? this.matchText;
+        this.githubLabel = githubLabel?.trim() ?? undefined;
     }
 }
 exports.CommentMarker = CommentMarker;

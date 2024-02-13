@@ -4,13 +4,13 @@ import { getRepositoryContext } from './../repository-context';
 import { error, info, warn } from '../logger';
 import { RestEndpointMethodTypes } from '@octokit/rest';
 
-type TaskInformation = {
+export type CreateIssueParameters = {
   title: string;
   body: string;
   labels?: string[];
 };
 
-export type GitHubApiIssue = Pick<RestEndpointMethodTypes["issues"]["get"]["response"]["data"], "number" | "title" | "state" | "body" | "url" | "pull_request">;
+export type GitHubApiIssue = Pick<RestEndpointMethodTypes["issues"]["get"]["response"]["data"], "number" | "title" | "state" | "body" | "url" | "pull_request" | "labels">;
 
 const token = core.getInput('githubToken', { required: true });
 const octokit = github.getOctokit(token);
@@ -27,7 +27,7 @@ export async function getAllIssues(): Promise<GitHubApiIssue[]> {
 };
 
 export async function createIssue(
-  information: TaskInformation,
+  information: CreateIssueParameters,
 ): Promise<number> {
   try {
     const ctx = getRepositoryContext();
@@ -68,7 +68,7 @@ export async function completeIssue(issueNumber: number): Promise<void> {
 
 export async function updateIssue(
   issueNumber: number,
-  information: TaskInformation,
+  information: CreateIssueParameters,
 ): Promise<boolean> {
   try {
     const ctx = getRepositoryContext();

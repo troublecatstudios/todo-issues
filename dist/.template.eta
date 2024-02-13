@@ -15,4 +15,4 @@
 <% } %>
 
 ---
-_This issue has been automatically created based on a TODO comment found in [<%= it.relativeFilePath %> on line <%= it.line %>](<%= it.githubUrl %>). It will automatically be closed when the TODO comment is removed from the default branch._
+_This issue has been automatically created based on a code comment found in [<%= it.relativeFilePath %> on line <%= it.line %>](<%= it.githubUrl %>). It will automatically be closed when the above comment is removed from the default branch._

@@ -8,7 +8,7 @@ describe('getAllIssues', () => {
 
   const fakeIssuesList = [
     createFakeGitHubIssue(),
-    createFakeGitHubIssue({ number: 10 })
+    createFakeGitHubIssue({ number: 10, labels: ['bug'] })
   ];
 
   afterEach(() => {
@@ -23,5 +23,15 @@ describe('getAllIssues', () => {
       .reply({ status: 200, data: fakeIssuesList });
     const issues = await getAllIssues();
     expect(issues).toHaveLength(2);
+  });
+
+  it('should include labels for each issue', async () => {
+    setRepositoryContext({ repositoryOwner: 'todo-issues', repositoryName: 'troublecatstudios' });
+    moctokit.rest.issues
+      .listForRepo()
+      .reply({ status: 200, data: fakeIssuesList });
+    const issues = await getAllIssues();
+    expect(issues[0]).toHaveProperty('labels', []);
+    expect(issues[1]).toHaveProperty('labels', ['bug']);
   });
 });

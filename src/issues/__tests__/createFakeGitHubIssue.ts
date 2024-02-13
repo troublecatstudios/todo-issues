@@ -5,7 +5,7 @@ import { GitHubIssueWithMetadata } from "../issue-library";
 const defaultNumber = 1347;
 type fakeIssueParameters = Partial<GitHubApiIssue>;
 type fakeMetadataParameters = Partial<TodoIssueMetadata>;
-export const createFakeGitHubIssue = ({url, number, state, title, body, pull_request }: fakeIssueParameters = {}): GitHubApiIssue => {
+export const createFakeGitHubIssue = ({url, number, state, title, body, pull_request, labels }: fakeIssueParameters = {}): GitHubApiIssue => {
   return {
     "url": url || `https://api.github.com/repos/troublecatstudios/Hello-World/issues/${number || defaultNumber}`,
     "number": number || defaultNumber,
@@ -13,6 +13,7 @@ export const createFakeGitHubIssue = ({url, number, state, title, body, pull_req
     "title": title || `Found a bug`,
     "body": body || `I'm having a problem with this.`,
     "pull_request": pull_request || undefined,
+    "labels": labels || []
   };
 };
 

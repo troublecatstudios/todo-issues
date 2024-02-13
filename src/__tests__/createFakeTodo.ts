@@ -10,7 +10,7 @@ export const createFakeTodo = ({ type, hash, title, filePath, line, endLine }: c
     '  var i = 0;',
     '  for(var x of arguments) {'
   ].join('\r\n');
-  const markerText = [type, (label ? `:${label}` : '')].join('');
+  const markerText = [type || 'TODO', (label ? `:${label}` : '')].join('');
   return {
     type: new CommentMarker(markerText),
     title: title || 'Found a bug',

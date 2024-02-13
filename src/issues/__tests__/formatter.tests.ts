@@ -98,5 +98,24 @@ describe('formatIssueText', () => {
     expect(text).toContain('```js\nblah, blah\n```');
   });
 
+  it('should properly terminate the HTML comment', async () => {
+    const todo: ITodo = {
+      line: 10,
+      hash: 'abcde',
+      title: '',
+      issue: '',
+      type: new CommentMarker('TODO'),
+      filePath: 'something.js',
+      endLine: 11,
+      surroundingCode: 'blah, blah'
+    };
+    const body = await formatIssueText(todo);
+    const htmlCommentStartIndex = body.indexOf('<!--');
+    const htmlCommentEndIndex = body.indexOf('-->');
+    expect(htmlCommentStartIndex).toBeLessThan(htmlCommentEndIndex);
+    expect(htmlCommentStartIndex).not.toBe(-1);
+    expect(htmlCommentEndIndex).not.toBe(-1);
+  });
+
   // it should return a github issue payload { reference?, title, body }
 });

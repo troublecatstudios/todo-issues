@@ -6,7 +6,7 @@
   "line": <%= it.line %>
 }
 //end todo-issue
-->
+-->
 
 <% if (it.surroundingCode) { %>
 ```<%~ it.languageCode %>

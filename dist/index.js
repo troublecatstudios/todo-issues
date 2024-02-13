@@ -58219,6 +58219,7 @@ const updateAction = async (action) => {
             labels: action.todo.type.githubLabel ? [action.todo.type.githubLabel] : undefined
         });
         if (result) {
+            (0, logger_1.info)(`issue updated.`, { title: action.todo.title, labels: [action.todo.type.githubLabel], number: action.number, filePath: action.todo.filePath });
             await (0, hooks_1.publish)('IssueUpdated', { issueId: action.number, todo: action.todo });
             return true;
         }
@@ -58243,6 +58244,7 @@ const createAction = async (action) => {
             labels: action.todo.type.githubLabel ? [action.todo.type.githubLabel] : undefined
         });
         await (0, hooks_1.publish)('IssueCreated', { issueId: issue, todo: action.todo });
+        (0, logger_1.info)(`issue created.`, { title: action.todo.title, labels: [action.todo.type.githubLabel], number: issue, filePath: action.todo.filePath });
         return true;
     }
     catch (e) {
@@ -58258,6 +58260,7 @@ const closeAction = async (action) => {
     try {
         await github.completeIssue(action.number);
         await (0, hooks_1.publish)('IssueClosed', { issueId: action.number });
+        (0, logger_1.info)(`issue closed.`, { number: action.number });
         return true;
     }
     catch (e) {

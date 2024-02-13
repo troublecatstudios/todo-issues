@@ -3,7 +3,7 @@ import { formatIssueText } from './formatter';
 import { ITodo } from '../todo-parser';
 import { publish } from '../hooks';
 import { GitHubIssueWithMetadata, getAllIssues, loadAllIssues } from './issue-library';
-import { error } from '../logger';
+import { error, info } from '../logger';
 
 export type ReconcileUpdateAction = {
   number: number,
@@ -41,6 +41,7 @@ const updateAction = async (action:ReconcileUpdateAction): Promise<boolean> => {
       labels: action.todo.type.githubLabel ? [action.todo.type.githubLabel] : undefined
     });
     if (result) {
+      info(`issue updated.`, { title: action.todo.title, labels: [action.todo.type.githubLabel], number: action.number, filePath: action.todo.filePath });
       await publish('IssueUpdated', { issueId: action.number, todo: action.todo });
       return true;
     }
@@ -65,6 +66,7 @@ const createAction = async (action:ReconcileCreateAction): Promise<boolean> => {
       labels: action.todo.type.githubLabel ? [action.todo.type.githubLabel] : undefined
     });
     await publish('IssueCreated', { issueId: issue, todo: action.todo });
+    info(`issue created.`, { title: action.todo.title, labels: [action.todo.type.githubLabel], number: issue, filePath: action.todo.filePath });
     return true;
   } catch(e) {
     error(`Unable to create issue. ${e}`, {
@@ -80,6 +82,7 @@ const closeAction = async (action:ReconcileCloseAction): Promise<boolean> => {
   try {
     await github.completeIssue(action.number);
     await publish('IssueClosed', { issueId: action.number });
+    info(`issue closed.`, { number: action.number });
     return true;
   } catch(e) {
     error(`Unable to close issue. ${e}`, {

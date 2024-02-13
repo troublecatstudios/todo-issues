@@ -57902,6 +57902,7 @@ const path_1 = __importDefault(__nccwpck_require__(1017));
 const fs_1 = __importDefault(__nccwpck_require__(7147));
 const linguist_language_map_1 = __nccwpck_require__(3924);
 const logger_1 = __nccwpck_require__(4636);
+const repository_context_1 = __nccwpck_require__(3451);
 const templateFile = path_1.default.resolve(__dirname, './.template.eta');
 const templateContents = fs_1.default.readFileSync(templateFile).toString();
 const metadataStartMarker = '//start todo-issue';
@@ -57912,11 +57913,15 @@ Eta.configure({
     autoTrim: false,
 });
 const formatIssueText = async (todo) => {
-    let ext = path_1.default.extname(todo.filePath);
-    let props = {
-        languageCode: await (0, linguist_language_map_1.getCodeForExtension)(ext) || ''
+    const ext = path_1.default.extname(todo.filePath);
+    const repoContext = (0, repository_context_1.getRepositoryContext)();
+    const relativeFilePath = path_1.default.relative(repoContext.workingDirectory, todo.filePath).replace(/\\/ig, '/');
+    const props = {
+        languageCode: await (0, linguist_language_map_1.getCodeForExtension)(ext) || '',
+        relativeFilePath,
+        githubUrl: `https://github.com/${repoContext.repositoryOwner}/${repoContext.repositoryName}/blob/${repoContext.defaultBranch}/${relativeFilePath}#L${todo.line}`
     };
-    let text = Eta.render(templateContents, { ...todo, ...props });
+    const text = Eta.render(templateContents, { ...todo, ...props, ...repoContext });
     return text || '';
 };
 exports.formatIssueText = formatIssueText;

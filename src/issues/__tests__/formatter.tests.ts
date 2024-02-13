@@ -1,6 +1,7 @@
 import { formatIssueText, getTodoIssueMetadata } from '../formatter';
 import { CommentMarker, ITodo } from '../../todo-parser';
 import { issueBodyWithInvalidJSON, issueBodyWithMissingMetadataFields, issueBodyWithNoMetadata, issueBodyWithValidMetadata } from './createFakeGitHubIssue';
+import { setRepositoryContext } from '../../__mocks__/repository-context';
 
 
 describe('getTodoIssueMetadata', () => {
@@ -115,6 +116,48 @@ describe('formatIssueText', () => {
     expect(htmlCommentStartIndex).toBeLessThan(htmlCommentEndIndex);
     expect(htmlCommentStartIndex).not.toBe(-1);
     expect(htmlCommentEndIndex).not.toBe(-1);
+  });
+
+  it('should include a URL to the comment line within GitHub', async () => {
+    const defaultBranch = 'main',
+          repositoryName = 'todo-issues',
+          repositoryOwner = 'troublecatstudios';
+    setRepositoryContext({ defaultBranch, repositoryName, repositoryOwner });
+    const todo: ITodo = {
+      line: 10,
+      hash: 'abcde',
+      title: '',
+      issue: '',
+      type: new CommentMarker('TODO'),
+      filePath: 'something.js',
+      endLine: 11,
+      surroundingCode: 'blah, blah'
+    };
+    const expectedUrl = `https://github.com/${repositoryOwner}/${repositoryName}/blob/${defaultBranch}/${todo.filePath}#L${todo.line}`;
+    const body = await formatIssueText(todo);
+    expect(body).toContain(expectedUrl);
+  });
+
+  it('should include the relative path to the file', async () => {
+    const workingDirectory = '/some/absolute',
+          defaultBranch = 'main',
+          repositoryName = 'todo-issues',
+          repositoryOwner = 'troublecatstudios';
+    setRepositoryContext({ defaultBranch, repositoryName, repositoryOwner, workingDirectory });
+    const todo: ITodo = {
+      line: 10,
+      hash: 'abcde',
+      title: '',
+      issue: '',
+      type: new CommentMarker('TODO'),
+      filePath: '/some/absolute/path/to/something.js',
+      endLine: 11,
+      surroundingCode: 'blah, blah'
+    };
+    const expectedPath = `path/to/something.js`;
+    const body = await formatIssueText(todo);
+    expect(body).toContain(expectedPath);
+    expect(body).toContain(`[${expectedPath} on line ${todo.line}]`);
   });
 
   // it should return a github issue payload { reference?, title, body }

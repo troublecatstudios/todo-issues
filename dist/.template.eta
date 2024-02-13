@@ -1,3 +1,13 @@
+<!-- todo-issue comment block, do not remove
+//start todo-issue
+{
+  "hash": "<%~ it.hash %>",
+  "filePath": "<%= it.filePath %>",
+  "line": <%= it.line %>
+}
+//end todo-issue
+->
+
 <% if (it.surroundingCode) { %>
 ```<%~ it.languageCode %>
 <%~ it.surroundingCode %>

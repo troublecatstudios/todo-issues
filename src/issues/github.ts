@@ -15,25 +15,6 @@ export type GitHubApiIssue = Pick<RestEndpointMethodTypes["issues"]["get"]["resp
 const token = core.getInput('githubToken', { required: true });
 const octokit = github.getOctokit(token);
 
-export async function getIssue(issueNumber: number): Promise<GitHubApiIssue | null> {
-  try {
-    const ctx = getRepositoryContext();
-    const issue = await octokit.rest.issues.get({
-      owner: ctx.repositoryOwner,
-      repo: ctx.repositoryName,
-      issue_number: issueNumber
-    });
-    return issue.data;
-  } catch (e) {
-    if (typeof e === "string") {
-      error(`error trying to fetch issue. ${e}`, { issueNumber });
-    } else if (e instanceof Error) {
-      error(`error trying to fetch issue. ${e}`, { issueNumber });
-    }
-    return null;
-  }
-};
-
 export async function getAllIssues(): Promise<GitHubApiIssue[]> {
   const ctx = getRepositoryContext();
   const issues = await octokit.rest.issues.listForRepo({

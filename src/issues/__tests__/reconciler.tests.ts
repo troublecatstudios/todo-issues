@@ -52,25 +52,33 @@ describe('reconcileIssues', () => {
       });
     });
 
-    describe('and its title and body have changed', () => {
-      // it('should update the issue in GitHub', async () => {
-      //   const todosFromFiles = [
-      //     createFakeTodo('TODO', '12345', 'this is a different title', './something2.js')
-      //   ];
-      //   await reconcileIssues(todosFromFiles);
-      // });
+    describe('and its title has changed', () => {
+      it('should update the issue in GitHub', async () => {
+        const todosFromFiles = [
+          createFakeTodo({ hash: issue1.metadata.hash, title: 'new title text', filePath: issue1.metadata.filePath, line: issue1.metadata.line }, 'TODO')
+        ];
+        await reconcileIssues(todosFromFiles);
+        expect(mockGitHub.updateIssue).toHaveBeenCalled();
+      });
     });
   });
 
   describe('given a marker exists in the code but not in the dictionary', () => {
-
-  });
-
-  describe('if the issue cannot be created', () => {
-
+    it('should create the issue in GitHub', async () => {
+      const todosFromFiles = [
+        createFakeTodo({ hash: 'bngjg', title: 'new title text', filePath: 'anotherfile.js', line: 44 }, 'TODO')
+      ];
+      await reconcileIssues(todosFromFiles);
+      expect(mockGitHub.createIssue).toHaveBeenCalled();
+    });
   });
 
   describe('given a marker exists only in the dictionary', () => {
-
+    it('should be closed in GitHub', async () => {
+      const todosFromFiles: ITodo[] = [
+      ];
+      await reconcileIssues(todosFromFiles);
+      expect(mockGitHub.completeIssue).toHaveBeenCalled();
+    });
   });
 });

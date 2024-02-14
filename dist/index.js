@@ -57663,6 +57663,70 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
+/***/ 7651:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getIssueUrl = exports.getActionContext = void 0;
+const github = __importStar(__nccwpck_require__(5438));
+const context = github.context;
+const defaultContext = {
+    headCommit: '',
+    ref: '',
+    isPullRequest: false,
+    pullRequestNumber: undefined,
+};
+const getActionContext = () => {
+    const ctx = Object.assign({}, defaultContext);
+    if (context.eventName === 'push') {
+        const payload = context.payload;
+        ctx.headCommit = payload.head_commit?.id || '';
+        ctx.ref = payload.ref;
+        ctx.isPullRequest = false;
+    }
+    if (context.eventName === 'pull_request' || context.eventName === 'pull_request_target') {
+        const payload = context.payload;
+        ctx.headCommit = payload.pull_request.head.sha;
+        ctx.ref = payload.pull_request.head.ref;
+        ctx.isPullRequest = true;
+        ctx.pullRequestNumber = payload.pull_request.number;
+    }
+    return ctx;
+};
+exports.getActionContext = getActionContext;
+const getIssueUrl = (issueNumber) => {
+    return `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/issues/${issueNumber}`;
+};
+exports.getIssueUrl = getIssueUrl;
+
+
+/***/ }),
+
 /***/ 6373:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -58423,16 +58487,17 @@ const getRepositoryContext = () => {
         eventJson = (0, fs_1.readFileSync)(process.env.GITHUB_EVENT_PATH, 'utf8');
     }
     const event = eventJson ? JSON.parse(eventJson) : null;
+    const workingDirectory = process.env.GITHUB_WORKSPACE || '';
+    const repositoryNodeId = process.env.GITHUB_REPO_NODE_ID || (event && event.repository && event.repository.node_id);
+    const repositoryOwner = process.env.GITHUB_REPO_OWNER || (event && event.repository && event.repository.full_name.split('/')[0]);
+    const repositoryName = process.env.GITHUB_REPO_NAME || (event && event.repository && event.repository.full_name.split('/')[1]);
+    const defaultBranch = process.env.GITHUB_REPO_DEFAULT_BRANCH || (event && event.repository && event.repository.default_branch);
     return {
-        workingDirectory: process.env.GITHUB_WORKSPACE || '',
-        repositoryNodeId: process.env.GITHUB_REPO_NODE_ID ||
-            (event && event.repository && event.repository.node_id),
-        repositoryOwner: process.env.GITHUB_REPO_OWNER ||
-            (event && event.repository && event.repository.full_name.split('/')[0]),
-        repositoryName: process.env.GITHUB_REPO_NAME ||
-            (event && event.repository && event.repository.full_name.split('/')[1]),
-        defaultBranch: process.env.GITHUB_REPO_DEFAULT_BRANCH ||
-            (event && event.repository && event.repository.default_branch),
+        workingDirectory,
+        repositoryNodeId,
+        repositoryOwner,
+        repositoryName,
+        defaultBranch
     };
 };
 exports.getRepositoryContext = getRepositoryContext;
@@ -58472,9 +58537,10 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.writeSummary = exports.setupListeners = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const hooks_1 = __nccwpck_require__(6554);
+const action_context_1 = __nccwpck_require__(7651);
 const factoids = (/* unused pure expression or super */ null && ([]));
 const issueSummaryTableItems = [
-    [{ data: 'Issue', header: true }, { data: 'Status', header: true }],
+    [{ data: 'Issue', header: true }, { data: 'Title', header: true }, { data: 'Status', header: true }],
 ];
 const counters = {
     filesProcessed: 0,
@@ -58486,13 +58552,13 @@ const setupListeners = () => {
         counters.todosFound += payload.todos.length;
     });
     (0, hooks_1.subscribe)('IssueCreated', async (payload) => {
-        issueSummaryTableItems.push([`${payload.issueId}`, 'CREATED']);
+        issueSummaryTableItems.push([`<a href="${(0, action_context_1.getIssueUrl)(payload.issueId)}" target="_blank">${payload.issueId}</a>`, `${payload.todo.title}`, 'CREATED']);
     });
     (0, hooks_1.subscribe)('IssueUpdated', async (payload) => {
-        issueSummaryTableItems.push([`${payload.issueId}`, 'UPDATED']);
+        issueSummaryTableItems.push([`<a href="${(0, action_context_1.getIssueUrl)(payload.issueId)}" target="_blank">${payload.issueId}</a>`, `${payload.todo.title}`, 'UPDATED']);
     });
     (0, hooks_1.subscribe)('IssueClosed', async (payload) => {
-        issueSummaryTableItems.push([`${payload.issueId}`, 'CLOSED']);
+        issueSummaryTableItems.push([`<a href="${(0, action_context_1.getIssueUrl)(payload.issueId)}" target="_blank">${payload.issueId}</a>`, '', 'CLOSED']);
     });
 };
 exports.setupListeners = setupListeners;

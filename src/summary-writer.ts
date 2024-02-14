@@ -2,10 +2,11 @@ import * as core from '@actions/core'
 import { SummaryTableRow } from '@actions/core/lib/summary';
 import { getConfig } from './config';
 import { subscribe } from './hooks';
+import { getIssueUrl } from './action-context';
 
 const factoids:string[] = [];
 const issueSummaryTableItems:SummaryTableRow[] = [
-  [{data: 'Issue', header: true}, {data: 'Status', header: true}],
+  [{data: 'Issue', header: true}, {data: 'Title', header: true }, {data: 'Status', header: true}],
 ];
 const counters = {
   filesProcessed: 0,
@@ -18,16 +19,16 @@ export const setupListeners = (): void => {
     counters.todosFound += payload.todos.length;
   });
 
-  subscribe('IssueCreated', async (payload) => {
-    issueSummaryTableItems.push([`${payload.issueId}`, 'CREATED']);
+  subscribe('IssueCreated', async (payload): Promise<void> => {
+    issueSummaryTableItems.push([`<a href="${getIssueUrl(payload.issueId)}" target="_blank">${payload.issueId}</a>`, `${payload.todo.title}`, 'CREATED']);
   });
 
-  subscribe('IssueUpdated', async (payload) => {
-    issueSummaryTableItems.push([`${payload.issueId}`, 'UPDATED']);
+  subscribe('IssueUpdated', async (payload): Promise<void> => {
+    issueSummaryTableItems.push([`<a href="${getIssueUrl(payload.issueId)}" target="_blank">${payload.issueId}</a>`, `${payload.todo.title}`, 'UPDATED']);
   });
 
-  subscribe('IssueClosed', async (payload) => {
-    issueSummaryTableItems.push([`${payload.issueId}`, 'CLOSED']);
+  subscribe('IssueClosed', async (payload): Promise<void> => {
+    issueSummaryTableItems.push([`<a href="${getIssueUrl(payload.issueId)}" target="_blank">${payload.issueId}</a>`, '', 'CLOSED']);
   });
 };
 

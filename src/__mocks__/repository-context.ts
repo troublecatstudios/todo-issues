@@ -1,6 +1,6 @@
-import { RepositoryContextType } from "../repository-context";
+import { RepositoryContext } from "../repository-context";
 
-export type SetRepositoryContextParams = Partial<RepositoryContextType>;
+export type SetRepositoryContextParams = Partial<RepositoryContext>;
 
 export const setRepositoryContext = ({workingDirectory, defaultBranch, repositoryName, repositoryNodeId, repositoryOwner }:SetRepositoryContextParams = {}) => {
   process.env.GITHUB_WORKSPACE = workingDirectory || '';

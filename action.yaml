@@ -2,8 +2,8 @@ name: 'todo-issues'
 description: 'Create and manage GitHub issues from TODO comments!'
 author: 'Jared Barboza <codeimpossible@users.noreply.github.com>'
 branding:
-  icon: 'heart'
-  color: 'red'
+  icon: 'check-square'
+  color: 'blue'
 inputs:
   githubToken:
     required: false
@@ -11,7 +11,7 @@ inputs:
     default: ${{ github.token }}
   markers:
     required: false
-    description: 'The types of coments to search for'
+    description: 'The types of comments to search for'
     default: |
       TODO
       FIXME: bug

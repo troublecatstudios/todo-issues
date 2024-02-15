@@ -1,46 +1,58 @@
 # TODO Issues
 
-This action scours your codebase for `TODO:`, `BUG:`, `FIXME:` and other types of TODO comments and creats GitHub Issues for them. The code comments are tracked and synchronized with their GitHub Issues.
+This action scours your codebase for `TODO:`, `BUG:`, `FIXME:` and other types of TODO comments and creates GitHub Issues for them. Each time the action runs the code comments are scanned and synchronized with their GitHub Issues. Removing a code comment will close its matching issue in GitHub.
 
+297 languages are supported for code scanning [see the full list on PrismJS](https://prismjs.com/#supported-languages).
 
-## Whats new
-
-* Initial release
-  * The first release of the action is out!
+[CHANGELOG](./CHANGELOG.md) | [Building todo-issues](./docs/Building.md)
 
 ## Usage
 
 ```yaml
-- uses: troublecat/todo-issues@v1
-  with:
-    # The set of markers that the action should search for. You can link markers to GitHub Labels by formatting entries as "Marker:Label".
-    # Default: |
-    #  TODO
-    #  FIXME: bug
-    #  HACK
-    #  BUG: bug
-    #  OPTIMIZE
-    #  NOTE
-    markers: ''
-
-    # A glob pattern that matches the files that should be scanned for comment markers.
-    # Default: **
-    files: ''
+name: Sync Issues With Comments
+on:
+  push:
+    branches:
+      - main
+permissions:
+  contents: read
+  issues: write
+jobs:
+  sync-todos:
+    runs-on: [ 'ubuntu-latest' ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Sync TODOs
+        uses: troublecatstudios/todo-issues@v1
 ```
 
-## Scenarios
-<!-- no toc -->
-  - [Label `TODO` comments as enhancements](#label-todo-comments-as-enhancements)
+## Configuration
 
-## Label `TODO` comments as enhancements
+|  Option Name  | Required | Description |
+|---------------|----------|-------------|
+| `markers`     | `false`  | The comment markers to search for when creating issues, in a new-line delimited list. By default the following markers are included: `TODO`, `FIXME`, `HACK`, `BUG`, `OPTIMIZE`, and `NOTE`. |
+| `files`       | `false`  | A [file glob](https://github.com/actions/toolkit/tree/main/packages/glob) string that points to all the files that should be searched for code comments. By default this is set to `**` (all files in the repository). |
+| `githubToken` | `false`  | The GitHub token to use when interacting with issues. By default this will use the token scoped to your repository. |
+
+
+### Example with all configuration options
 
 ```yaml
-- uses: troublecat/todo-issues@v1
-  with:
-    markers: |
-      TODO: enhancement
+      - name: Sync TODOs
+        uses: troublecatstudios/todo-issues@v1
+        with:
+          markers: |
+            TODO
+            FIXME
+            HACK
+            BUG
+            OPTIMIZE
+            NOTE
+          files: "**"
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 # License
 
-The scripts and documentation in this project are released under the [MIT License](LICENSE)
+The code and documentation in this project are released under the [MIT License](LICENSE)

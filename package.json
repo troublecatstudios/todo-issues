@@ -13,7 +13,7 @@
     "url": "https://github.com/troublecatstudios/todo-issues/issues"
   },
   "homepage": "https://github.com/troublecatstudios/todo-issues#readme",
-  "main": "index.js",
+  "main": "./dist/index.js",
   "scripts": {
     "test": "jest --no-cache",
     "build": "yarn clean && npm run package && yarn copy",

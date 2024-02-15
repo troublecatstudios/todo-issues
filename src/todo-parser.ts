@@ -1,12 +1,13 @@
 import { match } from "assert";
 import { createHash } from "crypto";
 import { readFile } from "fs/promises";
-import Prism from "prismjs";
+import * as Prism from './../lib/prism';
 import { getTokens, TokenWithLineData } from "./grammar";
+import { publish } from "./hooks";
 
 export interface ICommentMarker {
   matchText: string,
-  githubLabel: string,
+  githubLabel: string | undefined,
 };
 
 export const InvalidMarkersArgumentError = 'Invalid markers specified. Unable to parse todos.';
@@ -21,7 +22,7 @@ export class CommentMarker implements ICommentMarker {
     }
     let [matchText, githubLabel] = marker.split(':');
     this.matchText = matchText.trim();
-    this.githubLabel = githubLabel?.trim() ?? this.matchText;
+    this.githubLabel = githubLabel?.trim() ?? undefined;
   }
 };
 
@@ -89,6 +90,10 @@ export const getCommentsByMarker = async(marker: CommentMarker, filePath: string
   for(let comment of comments) {
     let todo = await createTodo(comment as TokenWithLineData<Prism.Token>, marker, filePath);
     todos.push(todo);
+  }
+
+  if (todos.length > 0) {
+    publish('FileParsed', { filePath, todos });
   }
 
   return todos;

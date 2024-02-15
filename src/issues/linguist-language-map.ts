@@ -2,8 +2,7 @@ import {readFile} from 'fs/promises';
 import {load} from 'js-yaml';
 import {resolve} from 'path';
 
-const linguistDir = resolve(__dirname, '../../node_modules/linguist');
-const languagesYaml = resolve(linguistDir, './lib/linguist/languages.yml');
+const languagesYaml = resolve(__dirname, './languages.yml');
 
 let languages: LanguageList | null = null;
 

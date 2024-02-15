@@ -1,10 +1,17 @@
 name: 'todo-issues'
 description: 'Create and manage GitHub issues from TODO comments!'
 author: 'Jared Barboza <codeimpossible@users.noreply.github.com>'
+branding:
+  icon: 'check-square'
+  color: 'blue'
 inputs:
+  githubToken:
+    required: false
+    description: 'The github token.'
+    default: ${{ github.token }}
   markers:
     required: false
-    description: 'The types of coments to search for'
+    description: 'The types of comments to search for'
     default: |
       TODO
       FIXME: bug
@@ -17,5 +24,5 @@ inputs:
     description: files to search
     default: '**'
 runs:
-  using: 'node16'
-  main: 'lib/main.js'
+  using: 'node20'
+  main: 'dist/index.js'

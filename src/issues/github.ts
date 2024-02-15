@@ -1,109 +1,91 @@
-import {Octokit, RestEndpointMethodTypes} from '@octokit/rest';
-import {Endpoints} from '@octokit/types';
-import {retry} from '@octokit/plugin-retry';
-import {throttling} from '@octokit/plugin-throttling';
-import RepositoryContext from './../repository-context';
+import * as github from '@actions/github';
+import * as core from '@actions/core';
+import { getRepositoryContext } from './../repository-context';
+import { error, info, warn } from '../logger';
+import { RestEndpointMethodTypes } from '@octokit/rest';
 
-type TaskInformation = {
+export type CreateIssueParameters = {
   title: string;
   body: string;
   labels?: string[];
 };
 
-type IssuesListResponse =
-  Endpoints['GET /repos/{owner}/{repo}/issues']['response']['data'];
+export type GitHubApiIssue = Pick<RestEndpointMethodTypes["issues"]["get"]["response"]["data"], "number" | "title" | "state" | "body" | "url" | "pull_request" | "labels">;
 
-type GetIssueResponse = RestEndpointMethodTypes["issues"]["get"]["response"]["data"];
+const token = core.getInput('githubToken', { required: true });
+const octokit = github.getOctokit(token);
 
-const Octo = Octokit.plugin(retry, throttling);
-const octokit = new Octo({
-  auth: `token ${process.env.GITHUB_TOKEN}`,
-  throttle: {
-    onRateLimit: (retryAfter: any, options: any) => {
-      octokit.log.warn(
-        `Request quota exhausted for request ${options.method} ${options.url}`,
-      );
-
-      if (options.request.retryCount === 0) {
-        // only retries once
-        octokit.log.info(`Retrying after ${retryAfter} seconds!`);
-        return true;
-      }
-    },
-    onAbuseLimit: (retryAfter: any, options: any) => {
-      // does not retry, only logs a warning
-      octokit.log.warn(
-        `Abuse detected for request ${options.method} ${options.url}`,
-      );
-    },
-  },
-  retry: {
-    doNotRetry: ['429'],
-  },
-});
-
-export async function getIssue(issueNumber: number): Promise<GetIssueResponse | null> {
-  try {
-    const issue = await octokit.issues.get({
-      owner: RepositoryContext.repositoryOwner,
-      repo: RepositoryContext.repositoryName,
-      issue_number: issueNumber
-    });
-    return issue.data;
-  } catch (e) {
-    return null;
-  }
-}
-
-export async function getAllIssues(): Promise<IssuesListResponse> {
-  const issues = await octokit.paginate(octokit.rest.issues.listForRepo, {
-    owner: RepositoryContext.repositoryOwner,
-    repo: RepositoryContext.repositoryName,
+export async function getAllIssues(): Promise<GitHubApiIssue[]> {
+  const ctx = getRepositoryContext();
+  const issues = await octokit.rest.issues.listForRepo({
+    owner: ctx.repositoryOwner,
+    repo: ctx.repositoryName,
   });
 
-  const notPrs = issues.filter(i => !i.pull_request);
+  const notPrs = issues.data.filter(i => !i.pull_request);
   return notPrs;
-}
+};
 
 export async function createIssue(
-  information: TaskInformation,
-): Promise<string | null> {
+  information: CreateIssueParameters,
+): Promise<number> {
   try {
+    const ctx = getRepositoryContext();
     const result = await octokit.rest.issues.create({
-      owner: RepositoryContext.repositoryOwner,
-      repo: RepositoryContext.repositoryName,
+      owner: ctx.repositoryOwner,
+      repo: ctx.repositoryName,
       title: information.title,
       body: information.body,
     });
-    return result.data.number ? `#${result.data.number}` : null;
+    return result.data.number;
   } catch (e) {
-    return null;
+    if (typeof e === "string") {
+      error(`error trying to create issue. ${e}`, { title: information.title, body: information.body });
+    } else if (e instanceof Error) {
+      error(`error trying to create issue. ${e}`, { title: information.title, body: information.body });
+    }
+    throw e;
   }
-}
+};
 
 export async function completeIssue(issueNumber: number): Promise<void> {
-  const result = await octokit.issues.update({
-    owner: RepositoryContext.repositoryOwner,
-    repo: RepositoryContext.repositoryName,
-    issue_number: issueNumber,
-    state: 'closed',
-  });
-}
+  try {
+    const ctx = getRepositoryContext();
+    const result = await octokit.rest.issues.update({
+      owner: ctx.repositoryOwner,
+      repo: ctx.repositoryName,
+      issue_number: issueNumber,
+      state: 'closed',
+    });
+  } catch (e) {
+    if (typeof e === "string") {
+      error(`error trying to complete issue. ${e}`, { issueNumber });
+    } else if (e instanceof Error) {
+      error(`error trying to complete issue. ${e}`, { issueNumber });
+    }
+  }
+};
 
 export async function updateIssue(
   issueNumber: number,
-  information: TaskInformation,
+  information: CreateIssueParameters,
 ): Promise<boolean> {
   try {
-    const result = await octokit.issues.update({
-      owner: RepositoryContext.repositoryOwner,
-      repo: RepositoryContext.repositoryName,
+    const ctx = getRepositoryContext();
+    const result = await octokit.rest.issues.update({
+      owner: ctx.repositoryOwner,
+      repo: ctx.repositoryName,
       issue_number: issueNumber,
       title: information.title,
       body: information.body,
     });
     return true;
   } catch (e) {
+    if (typeof e === "string") {
+      error(`error trying to complete issue. ${e}`, { issueNumber, title: information.title, body: information.body });
+    } else if (e instanceof Error) {
+      error(`error trying to complete issue. ${e}`, { issueNumber, title: information.title, body: information.body });
+    }
     return false;
   }
-}
+};

@@ -1,0 +1,23 @@
+<!-- todo-issue comment block, do not remove
+//start todo-issue
+{
+  "hash": "abcde",
+  "filePath": "/src/file.js",
+  "line": 1
+}
+//end todo-issue
+-->
+
+The following **TODO** comment was found in `/src/file.js` on line 1.
+
+```js
+// TODO: convert this to typescript
+function add() {
+  var i = 0;
+  for(var x of arguments) {
+    i += x;
+```
+
+
+---
+_This issue has been automatically created by [todo-issues v1.0.0](https://github.com/troublecatstudios/todo-issues#readme) based on a code comment found in [file.js on line 1](https://github.com/test/repo/blob/main/file.js#L1). It will automatically be closed when the above comment is removed from the default branch._

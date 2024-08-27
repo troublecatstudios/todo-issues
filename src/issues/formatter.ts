@@ -5,6 +5,9 @@ import fs from 'fs';
 import { getCodeForExtension } from './linguist-language-map';
 import { error } from '../logger';
 import { getRepositoryContext } from '../repository-context';
+import * as pkg from './../../package.json';
+
+const { version, name, homepage } = pkg;
 
 const templateFile = path.resolve(__dirname, './.template.eta');
 const templateContents = fs.readFileSync(templateFile).toString();
@@ -31,6 +34,8 @@ export const formatIssueText = async (todo: ITodo): Promise<string> => {
   const props = {
     languageCode: await getCodeForExtension(ext) || '',
     relativeFilePath,
+    version,
+    todoIssuesLink: `[${name} v${version}](${homepage})`,
     githubUrl: `https://github.com/${repoContext.repositoryOwner}/${repoContext.repositoryName}/blob/${repoContext.defaultBranch}/${relativeFilePath}#L${todo.line}`
   };
   const text = Eta.render(templateContents, { ...todo, ...props, ...repoContext });

@@ -20,4 +20,4 @@ function add() {
 
 
 ---
-_This issue has been automatically created by [todo-issues v1.0.0](https://github.com/troublecatstudios/todo-issues#readme) based on a code comment found in [file.js on line 1](https://github.com/test/repo/blob/main/file.js#L1). It will automatically be closed when the above comment is removed from the default branch._
+_This issue has been automatically created by [todo-issues v1.1.0](https://github.com/troublecatstudios/todo-issues#readme) based on a code comment found in [file.js on line 1](https://github.com/test/repo/blob/main/file.js#L1). It will automatically be closed when the above comment is removed from the default branch._

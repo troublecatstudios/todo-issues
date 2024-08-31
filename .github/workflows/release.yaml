@@ -36,9 +36,18 @@ jobs:
           level: ${{ steps.release-label.outputs.level }}
 
       - name: Prep
-        uses: actions/setup-node@v4.0.3
+        uses: actions/setup-node@v4
         with:
-          node-version: '16'
+          node-version: '20'
+
+      - name: Build distribution
+        if: ${{ steps.bump-semver.outputs.new_version != null }}
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          yarn install && yarn build
+          git add .
+          git commit -m "built distribution"
 
       - name: update package.json with new version
         if: ${{ steps.bump-semver.outputs.new_version != null }}

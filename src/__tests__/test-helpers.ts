@@ -8,3 +8,7 @@ export const normalizeNewLines = (input: string): string => {
 export const normalizeString = (input: string): string => {
   return normalizeNewLines(input).trim();
 };
+
+export const removeWhitespace = (input: string): string => {
+  return input.replace(/\s/ig, '');
+}

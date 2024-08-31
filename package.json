@@ -1,6 +1,6 @@
 {
   "name": "todo-issues",
-  "version": "0.0.0",
+  "version": "1.1.0",
   "description": "",
   "private": true,
   "author": "Jared Barboza",
@@ -29,7 +29,7 @@
     ".": "./dist/index.js"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "devDependencies": {
     "@actions/exec": "^1.1.1",

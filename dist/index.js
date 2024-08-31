@@ -58063,6 +58063,7 @@ async function createIssue(information) {
             repo: ctx.repositoryName,
             title: information.title,
             body: information.body,
+            labels: information.labels,
         });
         return result.data.number;
     }

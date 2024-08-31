@@ -57967,6 +57967,8 @@ const fs_1 = __importDefault(__nccwpck_require__(7147));
 const linguist_language_map_1 = __nccwpck_require__(3924);
 const logger_1 = __nccwpck_require__(4636);
 const repository_context_1 = __nccwpck_require__(3451);
+const pkg = __importStar(__nccwpck_require__(4147));
+const { version, name, homepage } = pkg;
 const templateFile = path_1.default.resolve(__dirname, './.template.eta');
 const templateContents = fs_1.default.readFileSync(templateFile).toString();
 const metadataStartMarker = '//start todo-issue';
@@ -57983,6 +57985,8 @@ const formatIssueText = async (todo) => {
     const props = {
         languageCode: await (0, linguist_language_map_1.getCodeForExtension)(ext) || '',
         relativeFilePath,
+        version,
+        todoIssuesLink: `[${name} v${version}](${homepage})`,
         githubUrl: `https://github.com/${repoContext.repositoryOwner}/${repoContext.repositoryName}/blob/${repoContext.defaultBranch}/${relativeFilePath}#L${todo.line}`
     };
     const text = Eta.render(templateContents, { ...todo, ...props, ...repoContext });
@@ -58063,6 +58067,7 @@ async function createIssue(information) {
             repo: ctx.repositoryName,
             title: information.title,
             body: information.body,
+            labels: information.labels,
         });
         return result.data.number;
     }
@@ -61481,6 +61486,14 @@ module.exports = parseParams
 }));
 //# sourceMappingURL=eta.umd.js.map
 
+
+/***/ }),
+
+/***/ 4147:
+/***/ ((module) => {
+
+"use strict";
+module.exports = JSON.parse('{"name":"todo-issues","version":"1.1.0","description":"","private":true,"author":"Jared Barboza","license":"MIT","repository":{"type":"git","url":"git+https://github.com/troublecatstudios/todo-issues.git"},"bugs":{"url":"https://github.com/troublecatstudios/todo-issues/issues"},"homepage":"https://github.com/troublecatstudios/todo-issues#readme","main":"./dist/index.js","scripts":{"test":"jest --no-cache","build":"yarn clean && npm run package && yarn copy","version":"yarn run build","ci":"yarn run build && yarn test --coverage","cli":"node ./bin/cli.js","copy":"node ./.github/scripts/build-helpers/copy.js","clean":"node ./.github/scripts/build-helpers/clean.js","package":"ncc build src/index.ts --license licenses.txt","package:watch":"npm run package -- --watch"},"exports":{".":"./dist/index.js"},"engines":{"node":">=18"},"devDependencies":{"@actions/exec":"^1.1.1","@kie/mock-github":"^2.0.1","@types/jest":"^27.4.1","@types/js-yaml":"^4.0.5","@types/node":"^20.1.4","@types/prismjs":"^1.26.0","@vercel/ncc":"^0.38.1","esbuild":"^0.20.0","jest":"^27.5.1","nock":"^14.0.0-beta.2","ts-jest":"^27.1.4","ts-node":"^10.9.1","typescript":"^4.9.5"},"dependencies":{"@actions/core":"^1.10.0","@actions/github":"^6.0.0","@actions/glob":"^0.4.0","@actions/io":"^1.1.3","@octokit/plugin-retry":"^3.0.9","@octokit/plugin-throttling":"^5.2.1","@octokit/rest":"^19.0.7","@octokit/webhooks-definitions":"^3.67.3","eta":"^2.0.1","js-yaml":"^4.1.0","linguist":"https://github.com/github/linguist#v7.30.0","prismjs":"^1.28.0"}}');
 
 /***/ })
 

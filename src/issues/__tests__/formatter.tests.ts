@@ -2,6 +2,8 @@ import { formatIssueText, getTodoIssueMetadata } from '../formatter';
 import { CommentMarker, ITodo } from '../../todo-parser';
 import { issueBodyWithInvalidJSON, issueBodyWithMissingMetadataFields, issueBodyWithNoMetadata, issueBodyWithValidMetadata } from './createFakeGitHubIssue';
 import { setRepositoryContext } from '../../__mocks__/repository-context';
+import { readFixture } from '../../__tests__/fixture-helper';
+import { normalizeString } from '../../__tests__/test-helpers';
 
 
 describe('getTodoIssueMetadata', () => {
@@ -120,8 +122,8 @@ describe('formatIssueText', () => {
 
   it('should include a URL to the comment line within GitHub', async () => {
     const defaultBranch = 'main',
-          repositoryName = 'todo-issues',
-          repositoryOwner = 'troublecatstudios';
+      repositoryName = 'todo-issues',
+      repositoryOwner = 'troublecatstudios';
     setRepositoryContext({ defaultBranch, repositoryName, repositoryOwner });
     const todo: ITodo = {
       line: 10,
@@ -140,9 +142,9 @@ describe('formatIssueText', () => {
 
   it('should include the relative path to the file', async () => {
     const workingDirectory = '/some/absolute',
-          defaultBranch = 'main',
-          repositoryName = 'todo-issues',
-          repositoryOwner = 'troublecatstudios';
+      defaultBranch = 'main',
+      repositoryName = 'todo-issues',
+      repositoryOwner = 'troublecatstudios';
     setRepositoryContext({ defaultBranch, repositoryName, repositoryOwner, workingDirectory });
     const todo: ITodo = {
       line: 10,
@@ -158,6 +160,33 @@ describe('formatIssueText', () => {
     const body = await formatIssueText(todo);
     expect(body).toContain(expectedPath);
     expect(body).toContain(`[${expectedPath} on line ${todo.line}]`);
+  });
+
+  it('should generate issue text that matches the .template.eta template', async () => {
+    const workingDirectory = '/src',
+      defaultBranch = 'main',
+      repositoryName = 'repo',
+      repositoryOwner = 'test',
+      expectedIssueBody = (await readFixture(`./cases/01_basic-comment.issue.txt`)).toString();
+    setRepositoryContext({ defaultBranch, repositoryName, repositoryOwner, workingDirectory });
+    const todo: ITodo = {
+      line: 1,
+      hash: 'abcde',
+      title: '',
+      issue: '',
+      type: new CommentMarker('TODO'),
+      filePath: '/src/file.js',
+      endLine: 5,
+      surroundingCode: [
+        '// TODO: convert this to typescript',
+        'function add() {',
+        '  var i = 0;',
+        '  for(var x of arguments) {',
+        '    i += x;',
+      ].join('\n')
+    };
+    const body = await formatIssueText(todo);
+    expect(normalizeString(body)).toBe(normalizeString(expectedIssueBody));
   });
 
   // it should return a github issue payload { reference?, title, body }

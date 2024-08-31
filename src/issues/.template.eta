@@ -8,6 +8,7 @@
 //end todo-issue
 -->
 
+The following **<%= it.type.matchText %>** comment was found in `<%= it.filePath %>` on line <%= it.line %>.
 <% if (it.surroundingCode) { %>
 ```<%~ it.languageCode %>
 <%~ it.surroundingCode %>
@@ -15,4 +16,4 @@
 <% } %>
 
 ---
-_This issue has been automatically created based on a code comment found in [<%= it.relativeFilePath %> on line <%= it.line %>](<%= it.githubUrl %>). It will automatically be closed when the above comment is removed from the default branch._
+_This issue has been automatically created by <%= it.todoIssuesLink %> based on a code comment found in [<%= it.relativeFilePath %> on line <%= it.line %>](<%= it.githubUrl %>). It will automatically be closed when the above comment is removed from the default branch._
